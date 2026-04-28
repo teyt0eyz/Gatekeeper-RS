@@ -1,0 +1,40 @@
+# testconfig.toml — local test override for Gatekeeper-RS
+#
+# HOW IT WORKS:
+#   - Drop this file next to config.toml and run normally:  cargo run
+#   - Fields defined here OVERRIDE the matching field in config.toml
+#   - Fields you omit here are taken from config.toml unchanged
+#   - Delete (or rename) this file to return to production config
+#
+# WHAT TO EXPECT ON YOUR MACBOOK:
+#   - "Auth (TEST)"   → dead port 19001  →  DOWN immediately
+#   - "DB (TEST)"     → dead port 19002  →  DOWN immediately
+#   - "Mock HTTP"     → 127.0.0.1:8000   →  UP if you run:
+#                       python3 -m http.server 8000
+#   - Heal commands are harmless echoes, nothing gets restarted
+#   - Poll every 8s so you see transitions quickly
+
+interval_secs = 8
+
+# Override to a test Discord channel so prod doesn't get spammed
+# Leave commented out to inherit the webhook from config.toml
+discord_webhook_url = "https://discord.com/api/webhooks/1498514698411311106/JJr7FNMcxaG0KfDAoEW3Inew2RIUcd9e5E6cAo3nblD09ckg0WQM6snN9MZRlspA4NTU"
+
+# Providing [[services]] replaces the entire list from config.toml
+[[services]]
+name = "Auth (TEST)"
+url  = "http://127.0.0.1:19001"   # nothing listens here → DOWN alert fires
+method = "HTTP"
+restart_command = "echo '[TEST] would run: systemctl restart auth-service'"
+
+[[services]]
+name = "DB (TEST)"
+url  = "127.0.0.1:19002"          # dead TCP port → DOWN alert fires
+method = "TCP"
+restart_command = "echo '[TEST] would run: systemctl restart postgresql'"
+
+[[services]]
+name = "Mock HTTP"
+url  = "http://127.0.0.1:8000"    # UP if: python3 -m http.server 8000
+method = "HTTP"
+restart_command = "echo '[TEST] would run: systemctl restart nginx'"

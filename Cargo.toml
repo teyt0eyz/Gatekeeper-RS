@@ -1,0 +1,33 @@
+[package]
+name = "gatekeeper-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Async runtime — "full" enables net, process, time, sync, signal, macros
+tokio = { version = "1", features = ["full"] }
+
+# HTTP client — rustls-tls avoids OpenSSL dep, better for locked-down Proxmox VMs
+reqwest = { version = "0.11", default-features = false, features = ["json", "rustls-tls"] }
+
+# Config deserialization
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+serde_json = "1"
+
+# Error handling
+anyhow = "1"
+
+# TUI
+ratatui = "0.29"
+crossterm = { version = "0.28", features = ["event-stream"] }
+futures = "0.3"
+chrono = "0.4"
+
+# Persistent rolling log files (daily rotation, non-blocking writer)
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-appender = "0.2"
+
+# Host CPU / RAM monitoring
+sysinfo = "0.30"

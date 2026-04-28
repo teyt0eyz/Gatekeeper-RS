@@ -1,0 +1,269 @@
+2026-04-28T03:19:33.922471Z  INFO gatekeeper_rs: Gatekeeper-RS starting services=3
+2026-04-28T03:19:33.930588Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:19:33.930673Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=DB (TEST) cmd=echo '[TEST] would run: systemctl restart postgresql'
+2026-04-28T03:19:33.931484Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:19:33.931528Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=Auth (TEST) cmd=echo '[TEST] would run: systemctl restart auth-service'
+2026-04-28T03:19:33.932879Z  INFO gatekeeper_rs: Initial check: UP service=Mock HTTP
+2026-04-28T03:19:34.440106Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T03:19:34.440277Z  INFO gatekeeper_rs: Discord DOWN alert sent service=DB (TEST)
+2026-04-28T03:19:34.440317Z  INFO gatekeeper_rs::healer: Executing heal command service="DB (TEST)" cmd="echo '[TEST] would run: systemctl restart postgresql'"
+2026-04-28T03:19:34.446359Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T03:19:34.446516Z  INFO gatekeeper_rs: Discord DOWN alert sent service=Auth (TEST)
+2026-04-28T03:19:34.446537Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="DB (TEST)"
+2026-04-28T03:19:34.446549Z  INFO gatekeeper_rs::healer: Executing heal command service="Auth (TEST)" cmd="echo '[TEST] would run: systemctl restart auth-service'"
+2026-04-28T03:19:34.449981Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="Auth (TEST)"
+2026-04-28T03:19:41.932877Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:19:41.933581Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:19:49.931559Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:19:49.931870Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:19:57.932405Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:19:57.932752Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:20:05.930963Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:20:05.931303Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:20:13.929729Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:20:13.930043Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:20:21.929108Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:20:21.929384Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:20:29.929304Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:20:29.929594Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:20:37.928987Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:20:37.929249Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:20:45.928819Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:20:45.929153Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:20:53.929168Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:20:53.929369Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:20:53.929382Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:20:53.929478Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=Mock HTTP cmd=echo '[TEST] would run: systemctl restart nginx'
+2026-04-28T03:20:54.474277Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T03:20:54.474394Z  INFO gatekeeper_rs: Discord DOWN alert sent service=Mock HTTP
+2026-04-28T03:20:54.474418Z  INFO gatekeeper_rs::healer: Executing heal command service="Mock HTTP" cmd="echo '[TEST] would run: systemctl restart nginx'"
+2026-04-28T03:20:54.478690Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="Mock HTTP"
+2026-04-28T03:21:01.929431Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:21:01.929656Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:01.929655Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:09.929430Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:21:09.929586Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:09.929577Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:17.928922Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:21:17.929145Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:17.929164Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:25.928916Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:21:25.929013Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:25.929018Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:33.929581Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:21:33.929776Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:33.929794Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:41.928835Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:21:41.928993Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:41.929047Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:49.928835Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:21:49.929032Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:49.929261Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:57.929147Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:21:57.929340Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:21:57.929363Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:05.929692Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:22:05.929880Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:05.929910Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:13.929014Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:22:13.929248Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:13.929242Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:21.929314Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:22:21.929527Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:21.929549Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:29.929535Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:22:29.929741Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:29.929761Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:37.929190Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:22:37.929344Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:37.929367Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:45.929682Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:22:45.929880Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:45.929901Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:53.929834Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:22:53.930059Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:22:53.930051Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:01.929625Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:23:01.929838Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:01.929850Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:09.929132Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:23:09.929336Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:09.929359Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:17.929661Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:23:17.929879Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:17.929895Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:25.929531Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:23:25.929754Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:25.929771Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:33.928926Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:23:33.929094Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:33.929118Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:41.929469Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:23:41.929678Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:41.929697Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:49.929398Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:23:49.929608Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:49.929626Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:57.929325Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:23:57.929512Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:23:57.929534Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:05.929286Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:24:05.929503Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:05.929521Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:13.929195Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:24:13.929399Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:13.929416Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:21.929394Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:24:21.929588Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:21.929612Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:29.929878Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:24:29.930051Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:29.930097Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:37.929505Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:24:37.929686Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:37.929723Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:45.929774Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:24:45.929976Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:45.930006Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:53.929323Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:24:53.929507Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:24:53.929546Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:01.929157Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:25:01.929362Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:01.929375Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:09.928504Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:25:09.928701Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:09.928721Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:17.929873Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:25:17.930062Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:17.930087Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:25.929425Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:25:25.929552Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:25.929546Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:33.929984Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:25:33.930197Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:33.930217Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:41.930088Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:25:41.930260Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:41.930299Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:49.930120Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:25:49.930321Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:49.930339Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:57.929578Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:25:57.929760Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:25:57.929768Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:05.930016Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:26:05.930204Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:05.930211Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:13.930087Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:26:13.930261Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:13.930302Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:21.930017Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:26:21.930199Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:21.930236Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:29.930241Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:26:29.930394Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:29.930451Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:37.929344Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:26:37.929578Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:37.929596Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:45.929447Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:26:45.929608Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:45.929608Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:53.929519Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:26:53.929712Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:26:53.929719Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:01.929497Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:27:01.929616Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:01.929607Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:09.930212Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:27:09.930443Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:09.930462Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:17.930025Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:27:17.930208Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:17.930219Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:25.930366Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:27:25.930580Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:25.930598Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:33.929532Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:27:33.929759Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:33.929745Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:41.930263Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:27:41.930456Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:41.930463Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:49.929965Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:27:49.930157Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:49.930253Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:57.930037Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:27:57.930059Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:27:57.930326Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:28:05.929533Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:28:05.929796Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:8000" error=error sending request for url (http://127.0.0.1:8000/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:28:05.929781Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:28:13.930109Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:28:13.930457Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:28:13.931710Z  INFO gatekeeper_rs: Service RECOVERED service=Mock HTTP
+2026-04-28T03:28:14.509072Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T03:28:14.509228Z  INFO gatekeeper_rs: Discord RECOVERED alert sent service=Mock HTTP
+2026-04-28T03:28:21.929741Z  WARN gatekeeper_rs::checker: TCP connect failed addr="127.0.0.1:19002" error=Connection refused (os error 61)
+2026-04-28T03:28:21.929967Z  WARN gatekeeper_rs::checker: HTTP check failed url="http://127.0.0.1:19001" error=error sending request for url (http://127.0.0.1:19001/): error trying to connect: tcp connect error: Connection refused (os error 61)
+2026-04-28T03:28:25.619370Z  INFO gatekeeper_rs: User requested shutdown
+2026-04-28T03:28:25.619438Z  INFO gatekeeper_rs: Sending offline notification to Discord
+2026-04-28T03:28:26.060325Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T03:28:26.060706Z  INFO gatekeeper_rs: Gatekeeper-RS shutdown complete
+2026-04-28T03:28:59.427616Z  INFO gatekeeper_rs: Gatekeeper-RS starting services=3
+2026-04-28T03:28:59.435486Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=DB (TEST) cmd=echo '[TEST] would run: systemctl restart postgresql'
+2026-04-28T03:28:59.436313Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=Auth (TEST) cmd=echo '[TEST] would run: systemctl restart auth-service'
+2026-04-28T03:28:59.437246Z  INFO gatekeeper_rs: Initial check: UP service=Mock HTTP
+2026-04-28T03:29:00.002591Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T03:29:00.002784Z  INFO gatekeeper_rs: Discord DOWN alert sent service=Auth (TEST)
+2026-04-28T03:29:00.002840Z  INFO gatekeeper_rs::healer: Executing heal command service="Auth (TEST)" cmd="echo '[TEST] would run: systemctl restart auth-service'"
+2026-04-28T03:29:00.009594Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="Auth (TEST)"
+2026-04-28T03:29:00.076081Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T03:29:00.076266Z  INFO gatekeeper_rs: Discord DOWN alert sent service=DB (TEST)
+2026-04-28T03:29:00.076319Z  INFO gatekeeper_rs::healer: Executing heal command service="DB (TEST)" cmd="echo '[TEST] would run: systemctl restart postgresql'"
+2026-04-28T03:29:00.080629Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="DB (TEST)"
+2026-04-28T03:30:03.437721Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=Mock HTTP cmd=echo '[TEST] would run: systemctl restart nginx'
+2026-04-28T03:30:03.947864Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T03:30:03.948060Z  INFO gatekeeper_rs: Discord DOWN alert sent service=Mock HTTP
+2026-04-28T03:30:03.948111Z  INFO gatekeeper_rs::healer: Executing heal command service="Mock HTTP" cmd="echo '[TEST] would run: systemctl restart nginx'"
+2026-04-28T03:30:03.953757Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="Mock HTTP"
+2026-04-28T03:30:21.824782Z  INFO gatekeeper_rs: User requested shutdown
+2026-04-28T03:30:21.824865Z  INFO gatekeeper_rs: Sending offline notification to Discord
+2026-04-28T03:30:22.251446Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T03:30:22.251816Z  INFO gatekeeper_rs: Gatekeeper-RS shutdown complete
+2026-04-28T04:16:14.303307Z  INFO gatekeeper_rs: Gatekeeper-RS starting services=3
+2026-04-28T04:16:14.310091Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=DB (TEST) cmd=echo '[TEST] would run: systemctl restart postgresql'
+2026-04-28T04:16:14.310827Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=Auth (TEST) cmd=echo '[TEST] would run: systemctl restart auth-service'
+2026-04-28T04:16:14.312205Z  INFO gatekeeper_rs: Initial check: UP service=Mock HTTP
+2026-04-28T04:16:14.974260Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T04:16:14.974364Z  INFO gatekeeper_rs: Discord DOWN alert sent service=DB (TEST)
+2026-04-28T04:16:14.974387Z  INFO gatekeeper_rs::healer: Executing heal command service="DB (TEST)" cmd="echo '[TEST] would run: systemctl restart postgresql'"
+2026-04-28T04:16:14.978919Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="DB (TEST)"
+2026-04-28T04:16:15.024519Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T04:16:15.024618Z  INFO gatekeeper_rs: Discord DOWN alert sent service=Auth (TEST)
+2026-04-28T04:16:15.024641Z  INFO gatekeeper_rs::healer: Executing heal command service="Auth (TEST)" cmd="echo '[TEST] would run: systemctl restart auth-service'"
+2026-04-28T04:16:15.027898Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="Auth (TEST)"
+2026-04-28T04:18:23.304322Z  INFO gatekeeper_rs: User requested shutdown
+2026-04-28T04:18:23.304374Z  INFO gatekeeper_rs: Sending offline notification to Discord
+2026-04-28T04:18:23.746682Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T04:18:23.747035Z  INFO gatekeeper_rs: Gatekeeper-RS shutdown complete
+2026-04-28T07:55:53.358087Z  INFO gatekeeper_rs: Gatekeeper-RS starting services=3
+2026-04-28T07:55:53.358120Z  INFO gatekeeper_rs: Dry-run mode active — heal commands will be simulated, not executed
+2026-04-28T07:55:53.364183Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=DB (TEST) cmd=echo '[TEST] would run: systemctl restart postgresql'
+2026-04-28T07:55:53.364837Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=Auth (TEST) cmd=echo '[TEST] would run: systemctl restart auth-service'
+2026-04-28T07:55:53.365911Z  INFO gatekeeper_rs: Initial check: UP service=Mock HTTP
+2026-04-28T07:55:53.838713Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T07:55:53.838874Z  INFO gatekeeper_rs: Discord DOWN alert sent service=Auth (TEST)
+2026-04-28T07:55:53.838921Z  INFO gatekeeper_rs: [DRY-RUN] heal skipped service=Auth (TEST) cmd=echo '[TEST] would run: systemctl restart auth-service'
+2026-04-28T07:55:53.964880Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T07:55:53.965032Z  INFO gatekeeper_rs: Discord DOWN alert sent service=DB (TEST)
+2026-04-28T07:55:53.965065Z  INFO gatekeeper_rs: [DRY-RUN] heal skipped service=DB (TEST) cmd=echo '[TEST] would run: systemctl restart postgresql'
+2026-04-28T07:56:30.567542Z  INFO gatekeeper_rs: Config hot-reloaded by user
+2026-04-28T07:56:37.249626Z  INFO gatekeeper_rs: Config hot-reloaded by user
+2026-04-28T07:56:38.422548Z  INFO gatekeeper_rs: Config hot-reloaded by user
+2026-04-28T07:56:39.185241Z  INFO gatekeeper_rs: Config hot-reloaded by user
+2026-04-28T07:57:53.608822Z  INFO gatekeeper_rs: User requested shutdown
+2026-04-28T07:57:53.608889Z  INFO gatekeeper_rs: Sending offline notification to Discord
+2026-04-28T07:57:54.075124Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T07:57:54.075411Z  INFO gatekeeper_rs: Gatekeeper-RS shutdown complete
