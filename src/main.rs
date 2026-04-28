@@ -15,7 +15,10 @@
 
 mod checker;
 mod config;
+mod config_wizard;
+mod config_wizard_ui;
 mod healer;
+mod log_appender;
 mod notifier;
 mod tui;
 
@@ -29,6 +32,7 @@ use futures::StreamExt;
 use ratatui::{backend::CrosstermBackend, Terminal};
 use std::collections::HashMap;
 use std::io;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use tokio::sync::{mpsc, Mutex, RwLock};
 use tokio::time::{interval, Duration};
@@ -59,13 +63,9 @@ async fn main() -> Result<()> {
     // the end of main — dropping it triggers the final flush to disk.
     std::fs::create_dir_all("logs").context("Failed to create logs/ directory")?;
 
-    let file_appender = tracing_appender::rolling::RollingFileAppender::builder()
-        .rotation(tracing_appender::rolling::Rotation::DAILY)
-        .filename_prefix("gatekeeper")
-        .filename_suffix("log")
-        .build("logs")
-        .context("Failed to create rolling log appender")?;
-
+    // Custom local-time daily appender — see src/log_appender.rs for why we
+    // don't use tracing_appender's RollingFileAppender (it rotates on UTC).
+    let file_appender = log_appender::LocalDailyAppender::new("logs", "gatekeeper", "log");
     let (non_blocking_writer, _guard) = tracing_appender::non_blocking(file_appender);
 
     tracing_subscriber::fmt()
@@ -84,12 +84,48 @@ async fn main() -> Result<()> {
 
     // ── CLI args ──────────────────────────────────────────────────────────────
     let cli_args: Vec<String> = std::env::args().collect();
-    let dry_run = cli_args.iter().any(|a| a == "--dry-run");
+    let dry_run     = cli_args.iter().any(|a| a == "--dry-run");
+    let want_wizard = cli_args.iter().any(|a| a == "--config");
+    let want_help   = cli_args.iter().any(|a| a == "--help" || a == "-h");
     let config_path = cli_args.iter()
         .skip(1)
         .find(|a| !a.starts_with('-'))
         .cloned()
         .unwrap_or_else(|| "config.toml".to_string());
+
+    if want_help {
+        println!(concat!(
+            "Gatekeeper-RS — infrastructure health monitor\n",
+            "\n",
+            "USAGE:\n",
+            "  gatekeeper-rs [OPTIONS] [CONFIG_FILE]\n",
+            "\n",
+            "OPTIONS:\n",
+            "  --config    Launch the interactive Setup Wizard (creates / edits config.toml)\n",
+            "  --dry-run   Monitor without executing restart commands (simulate heals only)\n",
+            "  --help      Print this message\n",
+            "\n",
+            "ARGS:\n",
+            "  [CONFIG_FILE]  Path to config file (default: config.toml)\n",
+            "\n",
+            "EXAMPLES:\n",
+            "  gatekeeper-rs                   start monitor with config.toml\n",
+            "  gatekeeper-rs staging.toml      start monitor with a custom config\n",
+            "  gatekeeper-rs --config          open Setup Wizard\n",
+            "  gatekeeper-rs --dry-run         monitor, log heals but never run them\n",
+        ));
+        drop(_guard);
+        return Ok(());
+    }
+
+    // ── Config-wizard mode ────────────────────────────────────────────────────
+    if want_wizard {
+        info!("Entering config-wizard mode");
+        let result = run_config_wizard(&config_path);
+        info!("Config-wizard exited");
+        drop(_guard);
+        return result;
+    }
 
     // ── Config ────────────────────────────────────────────────────────────────
     let load_result = config::load_final(&config_path)
@@ -159,6 +195,9 @@ async fn run_app(
     let state_map: StateMap = Arc::new(Mutex::new(HashMap::new()));
     // Shared config — updated by the 'r' hot-reload handler, read by the checker task
     let shared_cfg = Arc::new(RwLock::new(cfg));
+    // Maintenance flag — toggled by 'M' hotkey, read by every spawned check task.
+    // Atomic avoids the lock-contention path; lookup is cheap on hot poll cycles.
+    let maintenance = Arc::new(AtomicBool::new(false));
 
     let http_client = reqwest::Client::builder()
         .timeout(Duration::from_secs(5))
@@ -206,6 +245,7 @@ async fn run_app(
         let state_map = Arc::clone(&state_map);
         let http_client = http_client.clone();
         let shared_cfg_checker = Arc::clone(&shared_cfg);
+        let maintenance_checker = Arc::clone(&maintenance);
         tokio::spawn(async move {
             let mut current_interval = shared_cfg_checker.read().await.interval_secs;
             let mut tick = interval(Duration::from_secs(current_interval));
@@ -224,8 +264,9 @@ async fn run_app(
                     let states = Arc::clone(&state_map);
                     let webhook = cfg.discord_webhook_url.clone();
                     let tx = tx.clone();
+                    let maint = Arc::clone(&maintenance_checker);
                     handles.push(tokio::spawn(async move {
-                        if let Err(e) = run_check(svc, client, states, webhook, tx, dry_run).await {
+                        if let Err(e) = run_check(svc, client, states, webhook, tx, dry_run, maint).await {
                             error!("Check error: {e:#}");
                         }
                     }));
@@ -276,6 +317,24 @@ async fn run_app(
                         if quit {
                             info!("User requested shutdown");
                             break;
+                        }
+                        if key.code == KeyCode::Char('m') || key.code == KeyCode::Char('M') {
+                            // Authoritative flip on the atomic, then mirror to AppState
+                            // so the next render reflects the new banner/border colour.
+                            let now_on = !maintenance.load(Ordering::Relaxed);
+                            maintenance.store(now_on, Ordering::Relaxed);
+                            app.maintenance_mode = now_on;
+                            if now_on {
+                                info!("Maintenance mode ENABLED — heals and Discord alerts suppressed");
+                                app.push_log(
+                                    "🔧 MAINTENANCE MODE: ON — alerts + auto-heal suppressed".to_string()
+                                );
+                            } else {
+                                info!("Maintenance mode DISABLED — normal alerting and auto-heal resumed");
+                                app.push_log(
+                                    "✓ MAINTENANCE MODE: OFF — normal monitoring resumed".to_string()
+                                );
+                            }
                         }
                         if key.code == KeyCode::Char('r') || key.code == KeyCode::Char('R') {
                             match config::load_final(&config_path) {
@@ -367,7 +426,10 @@ async fn run_check(
     webhook: Option<String>,
     tx: mpsc::Sender<UiUpdate>,
     dry_run: bool,
+    maintenance: Arc<AtomicBool>,
 ) -> Result<()> {
+    let in_maintenance = maintenance.load(Ordering::Relaxed);
+
     let result = checker::check(&svc, &client).await;
 
     // Single observation point for raw check results.
@@ -408,6 +470,16 @@ async fn run_check(
             warn!(service = %svc.name, cmd = %svc.restart_command, "Service DOWN — triggering auto-heal");
             let _ = tx.send(UiUpdate::Log(format!("{} → DOWN  heal: {}", svc.name, svc.restart_command))).await;
 
+            // Maintenance mode: still observe, but suppress *all* interventions
+            // (Discord alerts AND heal commands).
+            if in_maintenance {
+                info!(service = %svc.name, "[MAINT] DOWN observed — alert + heal suppressed");
+                let _ = tx.send(UiUpdate::Log(
+                    format!("[MAINT] suppressed alert + heal for {}", svc.name)
+                )).await;
+                return Ok(());
+            }
+
             if let Some(ref url) = webhook {
                 let msg = format!(":red_circle: **{}** is DOWN. Auto-heal triggered. (`{}`)", svc.name, svc.restart_command);
                 match notifier::send_discord(url, &msg).await {
@@ -434,6 +506,14 @@ async fn run_check(
                 info!(service = %svc.name, "Service RECOVERED");
                 let _ = tx.send(UiUpdate::Log(format!("{} → RECOVERED{}", svc.name, latency))).await;
 
+                if in_maintenance {
+                    info!(service = %svc.name, "[MAINT] RECOVERED observed — alert suppressed");
+                    let _ = tx.send(UiUpdate::Log(
+                        format!("[MAINT] suppressed RECOVERED alert for {}", svc.name)
+                    )).await;
+                    return Ok(());
+                }
+
                 if let Some(ref url) = webhook {
                     let msg = format!(":green_circle: **{}** has RECOVERED.", svc.name);
                     match notifier::send_discord(url, &msg).await {
@@ -451,5 +531,57 @@ async fn run_check(
         }
     }
 
+    Ok(())
+}
+
+// ── Config-wizard runner ──────────────────────────────────────────────────────
+// Owns the terminal for the duration of the wizard, fully independent of the
+// monitor mode.  Synchronous: no tokio tasks are spawned while the wizard runs,
+// so blocking crossterm::event::read() is safe on the runtime thread.
+
+fn run_config_wizard(config_path: &str) -> Result<()> {
+    // Pre-populate from the existing file so the user can edit in-place.
+    let mut wizard = if std::path::Path::new(config_path).exists() {
+        config_wizard::ConfigWizard::load_from_file(config_path)
+    } else {
+        config_wizard::ConfigWizard::new()
+    };
+
+    enable_raw_mode().context("Failed to enable raw mode for wizard")?;
+    let mut stdout = io::stdout();
+    execute!(stdout, EnterAlternateScreen, EnableMouseCapture)
+        .context("Failed to enter alternate screen for wizard")?;
+
+    let backend = CrosstermBackend::new(stdout);
+    let mut terminal = Terminal::new(backend).context("Failed to create terminal")?;
+    terminal.clear()?;
+
+    // ── Wizard event loop ─────────────────────────────────────────────────────
+    loop {
+        terminal.draw(|f| config_wizard_ui::render_wizard(f, &wizard))?;
+
+        match crossterm::event::read().context("Failed to read terminal event")? {
+            Event::Key(key) => wizard.handle_input(key),
+            Event::Resize(_, _) => {} // redraw on next iteration
+            _ => {}
+        }
+
+        if wizard.should_quit {
+            // One final render so the user sees the saved/error state before exit
+            terminal.draw(|f| config_wizard_ui::render_wizard(f, &wizard))?;
+            break;
+        }
+    }
+
+    disable_raw_mode().context("Failed to disable raw mode")?;
+    execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)
+        .context("Failed to leave alternate screen")?;
+    terminal.show_cursor()?;
+
+    if wizard.is_saved() {
+        println!("✓ config.toml saved successfully.");
+    } else {
+        println!("Wizard exited without saving.");
+    }
     Ok(())
 }

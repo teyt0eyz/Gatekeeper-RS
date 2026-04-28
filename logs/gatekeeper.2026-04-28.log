@@ -267,3 +267,94 @@
 2026-04-28T07:57:53.608889Z  INFO gatekeeper_rs: Sending offline notification to Discord
 2026-04-28T07:57:54.075124Z  INFO gatekeeper_rs::notifier: Discord notification delivered
 2026-04-28T07:57:54.075411Z  INFO gatekeeper_rs: Gatekeeper-RS shutdown complete
+2026-04-28T09:27:28.111850Z  INFO gatekeeper_rs: Gatekeeper-RS starting services=3
+2026-04-28T09:27:28.119784Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=DB (TEST) cmd=echo '[TEST] would run: systemctl restart postgresql'
+2026-04-28T09:27:28.120770Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=Auth (TEST) cmd=echo '[TEST] would run: systemctl restart auth-service'
+2026-04-28T09:27:28.122596Z  INFO gatekeeper_rs: Initial check: UP service=Mock HTTP
+2026-04-28T09:27:28.631399Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T09:27:28.631547Z  INFO gatekeeper_rs: Discord DOWN alert sent service=Auth (TEST)
+2026-04-28T09:27:28.631570Z  INFO gatekeeper_rs::healer: Executing heal command service="Auth (TEST)" cmd="echo '[TEST] would run: systemctl restart auth-service'"
+2026-04-28T09:27:28.636740Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="Auth (TEST)"
+2026-04-28T09:27:28.671492Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T09:27:28.671572Z  INFO gatekeeper_rs: Discord DOWN alert sent service=DB (TEST)
+2026-04-28T09:27:28.671593Z  INFO gatekeeper_rs::healer: Executing heal command service="DB (TEST)" cmd="echo '[TEST] would run: systemctl restart postgresql'"
+2026-04-28T09:27:28.674752Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="DB (TEST)"
+2026-04-28T09:32:23.665241Z  INFO gatekeeper_rs: User requested shutdown
+2026-04-28T09:32:23.665387Z  INFO gatekeeper_rs: Sending offline notification to Discord
+2026-04-28T09:32:24.243848Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T09:32:24.244216Z  INFO gatekeeper_rs: Gatekeeper-RS shutdown complete
+2026-04-28T13:22:10.118225Z  INFO gatekeeper_rs: Gatekeeper-RS starting services=3
+2026-04-28T13:22:10.125766Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=DB (TEST) cmd=echo '[TEST] would run: systemctl restart postgresql'
+2026-04-28T13:22:10.126550Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=Auth (TEST) cmd=echo '[TEST] would run: systemctl restart auth-service'
+2026-04-28T13:22:10.128206Z  INFO gatekeeper_rs: Initial check: UP service=Mock HTTP
+2026-04-28T13:22:10.817060Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T13:22:10.817309Z  INFO gatekeeper_rs: Discord DOWN alert sent service=Auth (TEST)
+2026-04-28T13:22:10.817390Z  INFO gatekeeper_rs::healer: Executing heal command service="Auth (TEST)" cmd="echo '[TEST] would run: systemctl restart auth-service'"
+2026-04-28T13:22:10.824920Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="Auth (TEST)"
+2026-04-28T13:22:10.858463Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T13:22:10.859249Z  INFO gatekeeper_rs: Discord DOWN alert sent service=DB (TEST)
+2026-04-28T13:22:10.859293Z  INFO gatekeeper_rs::healer: Executing heal command service="DB (TEST)" cmd="echo '[TEST] would run: systemctl restart postgresql'"
+2026-04-28T13:22:10.865315Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="DB (TEST)"
+2026-04-28T13:23:17.850997Z  INFO gatekeeper_rs: Config hot-reloaded by user
+2026-04-28T13:26:09.335551Z  INFO gatekeeper_rs: User requested shutdown
+2026-04-28T13:26:09.335617Z  INFO gatekeeper_rs: Sending offline notification to Discord
+2026-04-28T13:26:09.733475Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T13:26:09.733631Z  INFO gatekeeper_rs: Gatekeeper-RS shutdown complete
+2026-04-28T13:26:54.458430Z  INFO gatekeeper_rs: Entering config-wizard mode
+2026-04-28T14:05:03.266242Z  INFO gatekeeper_rs: Gatekeeper-RS starting services=3
+2026-04-28T14:05:03.273417Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=DB (TEST) cmd=echo '[TEST] would run: systemctl restart postgresql'
+2026-04-28T14:05:03.274017Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=Mock HTTP cmd=echo '[TEST] would run: systemctl restart nginx'
+2026-04-28T14:05:03.274218Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=Auth (TEST) cmd=echo '[TEST] would run: systemctl restart auth-service'
+2026-04-28T14:05:03.926527Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T14:05:03.926686Z  INFO gatekeeper_rs: Discord DOWN alert sent service=Mock HTTP
+2026-04-28T14:05:03.926724Z  INFO gatekeeper_rs::healer: Executing heal command service="Mock HTTP" cmd="echo '[TEST] would run: systemctl restart nginx'"
+2026-04-28T14:05:03.932349Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="Mock HTTP"
+2026-04-28T14:05:03.932780Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T14:05:03.932883Z  INFO gatekeeper_rs: Discord DOWN alert sent service=DB (TEST)
+2026-04-28T14:05:03.932910Z  INFO gatekeeper_rs::healer: Executing heal command service="DB (TEST)" cmd="echo '[TEST] would run: systemctl restart postgresql'"
+2026-04-28T14:05:03.936089Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="DB (TEST)"
+2026-04-28T14:05:04.096800Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T14:05:04.096897Z  INFO gatekeeper_rs: Discord DOWN alert sent service=Auth (TEST)
+2026-04-28T14:05:04.096918Z  INFO gatekeeper_rs::healer: Executing heal command service="Auth (TEST)" cmd="echo '[TEST] would run: systemctl restart auth-service'"
+2026-04-28T14:05:04.099827Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="Auth (TEST)"
+2026-04-28T14:05:07.666250Z  INFO gatekeeper_rs: User requested shutdown
+2026-04-28T14:05:07.666338Z  INFO gatekeeper_rs: Sending offline notification to Discord
+2026-04-28T14:05:08.329201Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T14:05:08.329526Z  INFO gatekeeper_rs: Gatekeeper-RS shutdown complete
+2026-04-28T14:05:12.950427Z  INFO gatekeeper_rs: Entering config-wizard mode
+2026-04-28T14:05:18.590130Z  INFO gatekeeper_rs: Config-wizard exited
+2026-04-28T14:08:01.202089Z  INFO gatekeeper_rs: Entering config-wizard mode
+2026-04-28T14:10:54.262773Z  INFO gatekeeper_rs: Entering config-wizard mode
+2026-04-28T14:15:03.148342Z  INFO gatekeeper_rs: Config-wizard exited
+2026-04-28T14:15:06.262548Z  INFO gatekeeper_rs: Entering config-wizard mode
+2026-04-28T14:21:31.046319Z  INFO gatekeeper_rs: Config-wizard exited
+2026-04-28T14:28:18.187689Z  INFO gatekeeper_rs: Entering config-wizard mode
+2026-04-28T14:29:06.709251Z  INFO gatekeeper_rs: Config-wizard exited
+2026-04-28T14:29:10.085448Z  INFO gatekeeper_rs: Entering config-wizard mode
+2026-04-28T14:29:33.362004Z  INFO gatekeeper_rs: Config-wizard exited
+2026-04-28T14:29:40.461822Z  INFO gatekeeper_rs: Entering config-wizard mode
+2026-04-28T14:29:47.862899Z  INFO gatekeeper_rs: Config-wizard exited
+2026-04-28T14:40:56.710735Z  INFO gatekeeper_rs: Entering config-wizard mode
+2026-04-28T14:42:41.610221Z  INFO gatekeeper_rs: Config-wizard exited
+2026-04-28T14:43:04.405022Z  INFO gatekeeper_rs: Entering config-wizard mode
+2026-04-28T14:43:42.945133Z  INFO gatekeeper_rs: Config-wizard exited
+2026-04-28T17:59:34.645553Z  INFO gatekeeper_rs: Gatekeeper-RS starting services=3
+2026-04-28T17:59:34.652137Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=DB (TEST) cmd=echo '[TEST] would run: systemctl restart postgresql'
+2026-04-28T17:59:34.652783Z  WARN gatekeeper_rs: Service DOWN — triggering auto-heal service=Auth (TEST) cmd=echo '[TEST] would run: systemctl restart auth-service'
+2026-04-28T17:59:34.653885Z  INFO gatekeeper_rs: Initial check: UP service=Mock HTTP
+2026-04-28T17:59:35.170609Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T17:59:35.170743Z  INFO gatekeeper_rs: Discord DOWN alert sent service=Auth (TEST)
+2026-04-28T17:59:35.170779Z  INFO gatekeeper_rs::healer: Executing heal command service="Auth (TEST)" cmd="echo '[TEST] would run: systemctl restart auth-service'"
+2026-04-28T17:59:35.175830Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T17:59:35.175897Z  INFO gatekeeper_rs: Discord DOWN alert sent service=DB (TEST)
+2026-04-28T17:59:35.175917Z  INFO gatekeeper_rs::healer: Executing heal command service="DB (TEST)" cmd="echo '[TEST] would run: systemctl restart postgresql'"
+2026-04-28T17:59:35.176066Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="Auth (TEST)"
+2026-04-28T17:59:35.178335Z  INFO gatekeeper_rs::healer: Heal command exited successfully service="DB (TEST)"
+2026-04-28T18:00:00.673545Z  INFO gatekeeper_rs: User requested shutdown
+2026-04-28T18:00:00.673610Z  INFO gatekeeper_rs: Sending offline notification to Discord
+2026-04-28T18:00:01.242438Z  INFO gatekeeper_rs::notifier: Discord notification delivered
+2026-04-28T18:00:01.242660Z  INFO gatekeeper_rs: Gatekeeper-RS shutdown complete
+2026-04-28T18:00:20.472040Z  INFO gatekeeper_rs: Entering config-wizard mode
+2026-04-28T18:00:50.144841Z  INFO gatekeeper_rs: Config-wizard exited
+2026-04-28T18:03:10.000577Z  INFO gatekeeper_rs: Entering config-wizard mode
+2026-04-28T18:03:29.919463Z  INFO gatekeeper_rs: Config-wizard exited

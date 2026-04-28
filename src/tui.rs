@@ -46,6 +46,10 @@ pub struct AppState {
     pub ram_used_mb: u64,
     pub ram_total_mb: u64,
     pub dry_run: bool,
+    /// When true, monitoring continues but heals + Discord alerts are suppressed.
+    /// Authoritative copy lives in main.rs as Arc<AtomicBool>; this mirrors it
+    /// for rendering purposes.
+    pub maintenance_mode: bool,
     started_at: Instant,
 }
 
@@ -64,6 +68,7 @@ impl AppState {
             ram_used_mb: 0,
             ram_total_mb: 0,
             dry_run,
+            maintenance_mode: false,
             started_at: Instant::now(),
         }
     }
@@ -196,10 +201,36 @@ fn draw_header(frame: &mut Frame, area: Rect, state: &AppState) {
             Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
         ));
     }
+    if state.maintenance_mode {
+        // Phase from uptime gives a 1Hz flash that works even on terminals that
+        // ignore the SLOW_BLINK modifier (most modern emulators do). Alternates
+        // bg between solid Yellow and bordered "off" each second.
+        let on = state.started_at.elapsed().as_secs() % 2 == 0;
+        let style = if on {
+            Style::default()
+                .bg(Color::Yellow)
+                .fg(Color::Black)
+                .add_modifier(Modifier::BOLD | Modifier::SLOW_BLINK)
+        } else {
+            Style::default()
+                .fg(Color::Yellow)
+                .add_modifier(Modifier::BOLD | Modifier::SLOW_BLINK)
+        };
+        spans.push(Span::styled("  ╱  ", Style::default().fg(Color::DarkGray)));
+        spans.push(Span::styled(" 🔧 MAINTENANCE MODE ACTIVE ", style));
+    }
+
+    // Border colour signals state at a glance: yellow during maintenance.
+    let border_color = if state.maintenance_mode { Color::Yellow } else { Color::DarkGray };
+
     let line = Line::from(spans);
     frame.render_widget(
         Paragraph::new(line)
-            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::DarkGray)))
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .border_style(Style::default().fg(border_color)),
+            )
             .alignment(Alignment::Left),
         area,
     );
@@ -415,6 +446,8 @@ fn draw_statusbar(frame: &mut Frame, area: Rect) {
             Span::styled(" force quit   ", Style::default().fg(Color::DarkGray)),
             Span::styled("R", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
             Span::styled(" reload config   ", Style::default().fg(Color::DarkGray)),
+            Span::styled("M", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
+            Span::styled(" toggle maintenance   ", Style::default().fg(Color::DarkGray)),
             Span::styled("logs/gatekeeper.*.log", Style::default().fg(Color::DarkGray)),
         ])),
         area,

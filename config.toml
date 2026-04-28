@@ -1,43 +1,26 @@
-# Gatekeeper-RS sample configuration
-# Run: ./gatekeeper-rs config.toml
-# Or set RUST_LOG=debug for verbose output
-
 interval_secs = 30
-
-# Remove or comment this line to silence Discord notifications
 discord_webhook_url = "https://discord.com/api/webhooks/1498514698411311106/JJr7FNMcxaG0KfDAoEW3Inew2RIUcd9e5E6cAo3nblD09ckg0WQM6snN9MZRlspA4NTU"
 
-# ── Auth Service (HTTP) ──────────────────────────────────────────────────────
 [[services]]
 name = "Auth Service"
 url = "http://192.168.1.10:8080/health"
 method = "HTTP"
 restart_command = "systemctl restart auth-service"
 
-# ── VPN Gateway (TCP handshake check) ───────────────────────────────────────
 [[services]]
 name = "VPN Gateway"
 url = "192.168.1.1:1194"
 method = "TCP"
 restart_command = "systemctl restart openvpn@server"
 
-# ── PostgreSQL Database (TCP port check) ────────────────────────────────────
 [[services]]
 name = "PostgreSQL"
 url = "192.168.1.20:5432"
 method = "TCP"
 restart_command = "systemctl restart postgresql"
 
-# ── Nginx Reverse Proxy (HTTP) ───────────────────────────────────────────────
 [[services]]
 name = "Nginx Proxy"
 url = "http://192.168.1.5/healthz"
 method = "HTTP"
 restart_command = "systemctl reload nginx"
-
-# ── Redis Cache (TCP) ────────────────────────────────────────────────────────
-[[services]]
-name = "Redis"
-url = "192.168.1.25:6379"
-method = "TCP"
-restart_command = "systemctl restart redis"
