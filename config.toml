@@ -7,20 +7,4 @@ url = "http://thisis-fake-url.co.th"
 method = "HTTP"
 restart_command = "systemctl restart auth-service"
 
-[[services]]
-name = "VPN Gateway"
-url = "127.0.0.1:65432"
-method = "TCP"
-restart_command = "systemctl restart openvpn@server"
 
-[[services]]
-name = "PostgreSQL"
-url = "192.168.1.20:5432"
-method = "TCP"
-restart_command = "systemctl restart postgresql"
-
-[[services]]
-name = "Nginx Proxy"
-url = "http://192.168.1.5/healthz"
-method = "HTTP"
-restart_command = "systemctl reload nginx"

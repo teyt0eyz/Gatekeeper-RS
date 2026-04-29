@@ -399,19 +399,6 @@ WantedBy=multi-user.target
 
 ---
 
-## 🗺️ Roadmap
-
-ฟีเจอร์ที่อยู่ระหว่างพิจารณาสำหรับ v2.x:
-
-- [ ] **Heal cooldown timer** (เช่น "heal 1 ครั้งต่อ 5 นาที / service")
-- [ ] **Slack / Webhook generic** (รองรับเกินกว่า Discord)
-- [ ] **Multi-host monitoring** ผ่าน SSH หรือ agent-light
-- [ ] **HTTP body assertion** (เช่น `expect_substring = "OK"` ใน healthcheck)
-- [ ] **Prometheus metrics endpoint** สำหรับ scrape
-- [ ] **Web dashboard** (read-only mirror ของ TUI)
-
----
-
 ## 🧰 Project Structure
 
 ```
