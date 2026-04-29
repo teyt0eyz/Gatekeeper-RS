@@ -45,6 +45,9 @@ enum UiUpdate {
     Log(String),
     // Sent by the sysinfo thread every ~2 seconds
     SystemStats { cpu_pct: f32, ram_used_mb: u64, ram_total_mb: u64 },
+    // Sent by the checker task at the start of each poll cycle so the TUI
+    // can render a countdown to the next probe.
+    NextPoll { at: std::time::Instant },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -260,6 +263,12 @@ async fn run_app(
                     current_interval = cfg.interval_secs;
                     tick = interval(Duration::from_secs(current_interval));
                 }
+                // Tell the TUI when the *next* tick will fire so it can render
+                // a countdown for DOWN services.
+                let _ = tx.send(UiUpdate::NextPoll {
+                    at: std::time::Instant::now()
+                        + Duration::from_secs(current_interval),
+                }).await;
                 let mut handles = Vec::with_capacity(cfg.services.len());
                 for svc in &cfg.services {
                     let svc = svc.clone();
@@ -387,6 +396,9 @@ async fn run_app(
                     }
                     Some(UiUpdate::SystemStats { cpu_pct, ram_used_mb, ram_total_mb }) => {
                         app.update_system_stats(cpu_pct, ram_used_mb, ram_total_mb);
+                    }
+                    Some(UiUpdate::NextPoll { at }) => {
+                        app.set_next_poll(at);
                     }
                     None => break,
                 }

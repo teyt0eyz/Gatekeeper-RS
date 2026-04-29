@@ -50,6 +50,10 @@ pub struct AppState {
     /// Authoritative copy lives in main.rs as Arc<AtomicBool>; this mirrors it
     /// for rendering purposes.
     pub maintenance_mode: bool,
+    /// Wall-clock instant of the next scheduled poll cycle. Updated by the
+    /// checker task each tick; powers the "next Xs" countdown shown in the
+    /// LATENCY column for DOWN services.
+    pub next_poll_at: Option<Instant>,
     started_at: Instant,
 }
 
@@ -69,8 +73,25 @@ impl AppState {
             ram_total_mb: 0,
             dry_run,
             maintenance_mode: false,
+            next_poll_at: None,
             started_at: Instant::now(),
         }
+    }
+
+    pub fn set_next_poll(&mut self, at: Instant) {
+        self.next_poll_at = Some(at);
+    }
+
+    /// Whole seconds remaining until the next poll cycle, rounded UP so the
+    /// countdown never displays "0s" while a poll is still pending.
+    /// Returns None if no schedule is known yet (first tick) or the deadline
+    /// has already passed (probes are in flight).
+    fn seconds_to_next_poll(&self) -> Option<u64> {
+        let at  = self.next_poll_at?;
+        let now = Instant::now();
+        if at <= now { return None; }
+        let d   = at - now;
+        Some(d.as_secs() + if d.subsec_nanos() > 0 { 1 } else { 0 })
     }
 
     pub fn reload_services(&mut self, new_names: &[String]) {
@@ -246,17 +267,37 @@ fn draw_table(frame: &mut Frame, area: Rect, state: &AppState) {
         Cell::from("LAST CHECK").style(Style::default().fg(Color::White).add_modifier(Modifier::BOLD)),
     ]).height(1);
 
+    let countdown = state.seconds_to_next_poll();
+
     let rows: Vec<Row> = state.services.iter().map(|svc| {
         let (status_text, status_color) = match svc.status {
             HealthStatus::Up      => ("● UP   ", Color::Green),
             HealthStatus::Down    => ("● DOWN ", Color::Red),
             HealthStatus::Unknown => ("○ ??   ", Color::DarkGray),
         };
-        let latency = svc.latency_ms.map(|ms| format!(" {ms}ms")).unwrap_or_else(|| "  –".to_string());
+        // For DOWN rows, the latency column is empty anyway — repurpose it as
+        // a "next probe in Xs" countdown so the operator can see the polling
+        // rhythm. heal fires inside that next probe if the state cycle calls
+        // for it (UP→DOWN transition); otherwise it's just a re-check.
+        let (latency_text, latency_color) = match svc.status {
+            HealthStatus::Up => (
+                svc.latency_ms.map(|ms| format!(" {ms}ms"))
+                    .unwrap_or_else(|| "  –".to_string()),
+                Color::Gray,
+            ),
+            HealthStatus::Down => (
+                match countdown {
+                    Some(s) => format!(" next {s}s"),
+                    None    => " checking".to_string(),
+                },
+                Color::Yellow,
+            ),
+            HealthStatus::Unknown => ("  –".to_string(), Color::DarkGray),
+        };
         Row::new(vec![
             Cell::from(format!(" {}", svc.name)),
             Cell::from(status_text).style(Style::default().fg(status_color).add_modifier(Modifier::BOLD)),
-            Cell::from(latency).style(Style::default().fg(Color::Gray)),
+            Cell::from(latency_text).style(Style::default().fg(latency_color)),
             Cell::from(format!(" {}", svc.last_checked)).style(Style::default().fg(Color::DarkGray)),
         ])
     }).collect();
