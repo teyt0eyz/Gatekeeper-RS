@@ -124,7 +124,7 @@ fn render_footer_keys(frame: &mut Frame, area: Rect, hints: &[(&str, &str)]) {
 //  ┌─ Setup Wizard ────────────────────────────────────────── ? ─┐
 //  │  > Edit Global Settings                                      │
 //  │    Manage Services                                           │
-//  │    Add New Service                                           │
+//  │    Add Service                                               │
 //  │    Save & Exit                                               │
 //  └──────────────────────────────────────────────────────────── ┘
 //  · status ─────────────────────────────────────────────────── 1 │
@@ -189,7 +189,6 @@ fn render_main_menu(frame: &mut Frame, area: Rect, wizard: &ConfigWizard) {
         &[
             ("↑/↓", "navigate"),
             ("Enter", "open"),
-            ("S", "scan local"),
             ("Esc/q", "quit"),
         ],
     );
@@ -339,13 +338,14 @@ fn render_service_list(frame: &mut Frame, area: Rect, wizard: &ConfigWizard) {
 //  ┌─ URL / Address ───────────────────────────────────────── 3 ─┐
 //  ┌─ Method  ←/→ ─────────────────────────────────────────── 3 ─┐
 //  ┌─ Restart Command ─────────────────────────────────────── 3 ─┐
+//  ┌─ Recovery Delay (seconds) ────────────────────────────── 3 ─┐
 //  [leftover]
 //  · status ─────────────────────────────────────────────────── 1
 //    hints ──────────────────────────────────────────────────── 1
-//  min rows: 3 + 3×4 + 1 + 1 = 17
+//  min rows: 3 + 3×5 + 1 + 1 = 20
 
 fn render_service_edit(frame: &mut Frame, area: Rect, wizard: &ConfigWizard, idx: usize) {
-    let min_rows = FIELD_H + FIELD_H * 4 + 1 + 1;
+    let min_rows = FIELD_H + FIELD_H * 5 + 1 + 1;
     if area.height < min_rows {
         frame.render_widget(too_small_msg(area.height, min_rows), area);
         return;
@@ -359,6 +359,7 @@ fn render_service_edit(frame: &mut Frame, area: Rect, wizard: &ConfigWizard, idx
             Constraint::Length(FIELD_H), // url
             Constraint::Length(FIELD_H), // method
             Constraint::Length(FIELD_H), // restart command
+            Constraint::Length(FIELD_H), // recovery delay
             Constraint::Min(0),          // leftover
             Constraint::Length(1),       // status
             Constraint::Length(1),       // footer
@@ -400,11 +401,18 @@ fn render_service_edit(frame: &mut Frame, area: Rect, wizard: &ConfigWizard, idx
         wizard.edit_focus == ServiceField::RestartCommand,
         wizard.field_error(&format!("svc_{idx}_cmd")),
     );
+    render_input(
+        frame, chunks[5],
+        "Recovery Delay (seconds)",
+        &svc.recovery_delay,
+        wizard.edit_focus == ServiceField::RecoveryDelay,
+        wizard.field_error(&format!("svc_{idx}_delay")),
+    );
 
-    render_status_bar(frame, chunks[6], wizard);
+    render_status_bar(frame, chunks[7], wizard);
     render_footer_keys(
         frame,
-        chunks[7],
+        chunks[8],
         &[
             ("Tab/↓", "next field"),
             ("Shift+Tab/↑", "prev field"),

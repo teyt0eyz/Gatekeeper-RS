@@ -36,6 +36,9 @@ pub struct ServiceRow {
     /// Consumed by the Sparkline widget each render cycle.
     pub latency_history: VecDeque<u64>,
     pub last_checked: String,
+    /// When the delayed heal command is scheduled to fire. Drives the per-service
+    /// countdown displayed in the LATENCY column for DOWN services.
+    pub heal_at: Option<Instant>,
 }
 
 pub struct AppState {
@@ -66,6 +69,7 @@ impl AppState {
                 latency_ms: None,
                 latency_history: VecDeque::with_capacity(LATENCY_HISTORY),
                 last_checked: "–".to_string(),
+                heal_at: None,
             }).collect(),
             logs: VecDeque::with_capacity(MAX_LOGS),
             cpu_pct: 0.0,
@@ -80,6 +84,12 @@ impl AppState {
 
     pub fn set_next_poll(&mut self, at: Instant) {
         self.next_poll_at = Some(at);
+    }
+
+    pub fn set_heal_at(&mut self, name: &str, at: Instant) {
+        if let Some(row) = self.services.iter_mut().find(|r| r.name == name) {
+            row.heal_at = Some(at);
+        }
     }
 
     /// Whole seconds remaining until the next poll cycle, rounded UP so the
@@ -106,6 +116,7 @@ impl AppState {
                     latency_ms: None,
                     latency_history: VecDeque::with_capacity(LATENCY_HISTORY),
                     last_checked: "–".to_string(),
+                    heal_at: None,
                 });
             }
         }
@@ -120,6 +131,9 @@ impl AppState {
             row.status = if healthy { HealthStatus::Up } else { HealthStatus::Down };
             row.latency_ms = latency_ms;
             row.last_checked = Local::now().format("%H:%M:%S").to_string();
+            if healthy {
+                row.heal_at = None;
+            }
             // Append to latency ring buffer — only valid (connected) samples
             if let Some(ms) = latency_ms {
                 if row.latency_history.len() >= LATENCY_HISTORY {
@@ -267,31 +281,37 @@ fn draw_table(frame: &mut Frame, area: Rect, state: &AppState) {
         Cell::from("LAST CHECK").style(Style::default().fg(Color::White).add_modifier(Modifier::BOLD)),
     ]).height(1);
 
-    let countdown = state.seconds_to_next_poll();
-
     let rows: Vec<Row> = state.services.iter().map(|svc| {
         let (status_text, status_color) = match svc.status {
             HealthStatus::Up      => ("● UP   ", Color::Green),
             HealthStatus::Down    => ("● DOWN ", Color::Red),
             HealthStatus::Unknown => ("○ ??   ", Color::DarkGray),
         };
-        // For DOWN rows, the latency column is empty anyway — repurpose it as
-        // a "next probe in Xs" countdown so the operator can see the polling
-        // rhythm. heal fires inside that next probe if the state cycle calls
-        // for it (UP→DOWN transition); otherwise it's just a re-check.
+        // For DOWN rows, show a countdown to the scheduled heal. Falls back to
+        // the global next-poll countdown once the heal has fired and we're
+        // waiting for the next probe to confirm recovery.
         let (latency_text, latency_color) = match svc.status {
             HealthStatus::Up => (
                 svc.latency_ms.map(|ms| format!(" {ms}ms"))
                     .unwrap_or_else(|| "  –".to_string()),
                 Color::Gray,
             ),
-            HealthStatus::Down => (
-                match countdown {
-                    Some(s) => format!(" next {s}s"),
-                    None    => " checking".to_string(),
-                },
-                Color::Yellow,
-            ),
+            HealthStatus::Down => {
+                let now = Instant::now();
+                let heal_secs = svc.heal_at.and_then(|at| {
+                    if at <= now { return None; }
+                    let d = at - now;
+                    Some(d.as_secs() + if d.subsec_nanos() > 0 { 1 } else { 0 })
+                });
+                let text = match heal_secs {
+                    Some(s) => format!(" heal {s}s"),
+                    None => match state.seconds_to_next_poll() {
+                        Some(s) => format!(" next {s}s"),
+                        None    => " checking".to_string(),
+                    },
+                };
+                (text, Color::Yellow)
+            },
             HealthStatus::Unknown => ("  –".to_string(), Color::DarkGray),
         };
         Row::new(vec![

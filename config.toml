@@ -6,5 +6,4 @@ name = "Auth Service"
 url = "http://thisis-fake-url.co.th"
 method = "HTTP"
 restart_command = "systemctl restart auth-service"
-
-
+recovery_delay = 30

@@ -21,7 +21,12 @@ pub struct ServiceConfig {
     pub url: String,
     pub method: CheckMethod,
     pub restart_command: String,
+    /// Seconds to wait before executing the restart command. Defaults to 30.
+    #[serde(default = "default_recovery_delay")]
+    pub recovery_delay: u64,
 }
+
+fn default_recovery_delay() -> u64 { 30 }
 
 // Design Decision: serde rename_all = "UPPERCASE" lets config authors write
 // method = "HTTP" / "TCP" naturally without needing to match Rust variants.

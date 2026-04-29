@@ -25,6 +25,7 @@ pub struct ServiceForm {
     /// Always "HTTP" or "TCP" (uppercase).
     pub method:          String,
     pub restart_command: String,
+    pub recovery_delay:  String,
 }
 
 impl Default for ServiceForm {
@@ -34,6 +35,7 @@ impl Default for ServiceForm {
             url:             String::new(),
             method:          "HTTP".into(),
             restart_command: String::new(),
+            recovery_delay:  "30".into(),
         }
     }
 }
@@ -68,7 +70,7 @@ pub enum Screen {
 pub enum GlobalField { DiscordWebhook, Interval }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ServiceField { Name, Url, Method, RestartCommand }
+pub enum ServiceField { Name, Url, Method, RestartCommand, RecoveryDelay }
 
 // ── Wizard status ─────────────────────────────────────────────────────────────
 
@@ -84,7 +86,7 @@ pub enum WizardStatus {
 pub const MENU_ITEMS: &[&str] = &[
     "Edit Global Settings",
     "Manage Services",
-    "Add New Service",
+    "Add Service",
     "Save & Exit",
 ];
 
@@ -122,7 +124,7 @@ impl ConfigWizard {
         Self {
             discord_webhook: String::new(),
             interval:        "30".into(),
-            services:        vec![ServiceForm::default()],
+            services:        vec![],
             screen:          Screen::MainMenu,
             menu_index:      0,
             list_index:      0,
@@ -152,6 +154,7 @@ impl ConfigWizard {
                     crate::config::CheckMethod::Tcp  => "TCP".into(),
                 },
                 restart_command: s.restart_command,
+                recovery_delay:  s.recovery_delay.to_string(),
             }).collect();
         }
         w
@@ -198,13 +201,7 @@ impl ConfigWizard {
                             .min(self.services.len().saturating_sub(1));
                         self.screen = Screen::ServiceList;
                     }
-                    2 => {
-                        self.services.push(ServiceForm::default());
-                        let new_idx = self.services.len() - 1;
-                        self.list_index = new_idx;
-                        self.edit_focus = ServiceField::Name;
-                        self.screen = Screen::ServiceEdit(new_idx);
-                    }
+                    2 => self.start_scan(),
                     3 => self.save_action(),
                     _ => {}
                 }
@@ -321,7 +318,7 @@ impl ConfigWizard {
                 self.edit_focus = next_svc_field(&self.edit_focus);
             }
             KeyCode::Enter => match self.edit_focus {
-                ServiceField::RestartCommand => {
+                ServiceField::RecoveryDelay => {
                     self.validate_service(idx);
                     if !self.errors.keys().any(|k| k.starts_with(&format!("svc_{idx}_"))) {
                         self.screen = Screen::ServiceList;
@@ -353,6 +350,7 @@ impl ConfigWizard {
             ServiceField::Name           => svc.name.push(c),
             ServiceField::Url            => svc.url.push(c),
             ServiceField::RestartCommand => svc.restart_command.push(c),
+            ServiceField::RecoveryDelay  => { if c.is_ascii_digit() { svc.recovery_delay.push(c); } }
             ServiceField::Method         => {}
         }
     }
@@ -363,6 +361,7 @@ impl ConfigWizard {
             ServiceField::Name           => { svc.name.pop(); }
             ServiceField::Url            => { svc.url.pop(); }
             ServiceField::RestartCommand => { svc.restart_command.pop(); }
+            ServiceField::RecoveryDelay  => { svc.recovery_delay.pop(); }
             ServiceField::Method         => {}
         }
     }
@@ -453,6 +452,7 @@ impl ConfigWizard {
             url:             String::new(),
             method:          "HTTP".into(),
             restart_command: format!("sudo systemctl restart {}", picked.name),
+            recovery_delay:  "30".into(),
         };
         self.services.push(form);
         let new_idx = self.services.len() - 1;
@@ -501,6 +501,13 @@ impl ConfigWizard {
 
         if svc.restart_command.trim().is_empty() { set(&mut self.errors, &format!("svc_{idx}_cmd"), "Required"); }
         else { rm(&mut self.errors, &format!("svc_{idx}_cmd")); }
+
+        match svc.recovery_delay.trim().parse::<u64>() {
+            Ok(_) => { rm(&mut self.errors, &format!("svc_{idx}_delay")); }
+            _ => {
+                set(&mut self.errors, &format!("svc_{idx}_delay"), "Must be a non-negative integer");
+            }
+        }
     }
 
     // ── Save ──────────────────────────────────────────────────────────────────
@@ -528,6 +535,7 @@ impl ConfigWizard {
         #[derive(serde::Serialize)]
         struct ServiceOut {
             name: String, url: String, method: String, restart_command: String,
+            recovery_delay: u64,
         }
         #[derive(serde::Serialize)]
         struct ConfigOut {
@@ -551,6 +559,7 @@ impl ConfigWizard {
             url:             s.url.trim().to_string(),
             method:          s.method.to_uppercase(),
             restart_command: s.restart_command.trim().to_string(),
+            recovery_delay:  s.recovery_delay.trim().parse().unwrap_or(30),
         }).collect();
 
         let out = ConfigOut { interval_secs, discord_webhook_url, services };
@@ -578,7 +587,8 @@ fn next_svc_field(f: &ServiceField) -> ServiceField {
         ServiceField::Name           => ServiceField::Url,
         ServiceField::Url            => ServiceField::Method,
         ServiceField::Method         => ServiceField::RestartCommand,
-        ServiceField::RestartCommand => ServiceField::RestartCommand, // Enter exits
+        ServiceField::RestartCommand => ServiceField::RecoveryDelay,
+        ServiceField::RecoveryDelay  => ServiceField::RecoveryDelay, // Enter exits
     }
 }
 
@@ -588,6 +598,7 @@ fn prev_svc_field(f: &ServiceField) -> ServiceField {
         ServiceField::Url            => ServiceField::Name,
         ServiceField::Method         => ServiceField::Url,
         ServiceField::RestartCommand => ServiceField::Method,
+        ServiceField::RecoveryDelay  => ServiceField::RestartCommand,
     }
 }
 
@@ -677,7 +688,7 @@ mod tests {
     #[test]
     fn empty_service_fields_flagged() {
         let mut w = ConfigWizard::new();
-        // default ServiceForm has all empty strings
+        w.services.push(ServiceForm::default()); // blank form — all strings empty
         w.validate_service(0);
         assert!(w.errors.contains_key("svc_0_name"));
         assert!(w.errors.contains_key("svc_0_url"));
@@ -687,6 +698,7 @@ mod tests {
     #[test]
     fn filled_service_passes_validation() {
         let mut w = ConfigWizard::new();
+        w.services.push(ServiceForm::default());
         w.services[0].name            = "nginx".into();
         w.services[0].url             = "http://localhost".into();
         w.services[0].restart_command = "echo ok".into();
@@ -699,20 +711,32 @@ mod tests {
     // ── Menu navigation ──────────────────────────────────────────────────────
 
     #[test]
-    fn add_service_menu_creates_new_form() {
+    fn add_service_menu_triggers_scan() {
         let mut w = ConfigWizard::new();
-        let before = w.services.len();
-        w.menu_index = 2; // "Add New Service"
+        w.menu_index = 2; // "Add Service" — must trigger scan, not manual form
         w.handle_input(enter());
-        assert_eq!(w.services.len(), before + 1);
-        assert!(matches!(w.screen, Screen::ServiceEdit(_)));
+        // On non-Linux the scan cannot run; the wizard must stay on MainMenu
+        // and emit a friendly error rather than panicking or navigating away.
+        #[cfg(not(target_os = "linux"))]
+        {
+            assert!(matches!(w.screen, Screen::MainMenu), "must not navigate away when scan unavailable");
+            assert!(matches!(w.status, Some(WizardStatus::Error(_))), "must show scan-unavailable error");
+            assert_eq!(w.services.len(), 0, "must not create a blank service");
+        }
     }
 
     #[test]
     fn delete_keeps_at_least_one_service() {
         let mut w = ConfigWizard::new();
+        w.services.push(ServiceForm {
+            name:            "test".into(),
+            url:             "http://x".into(),
+            method:          "HTTP".into(),
+            restart_command: "echo ok".into(),
+            recovery_delay:  "30".into(),
+        });
         w.screen = Screen::ServiceList;
-        // Default has 1 service. D should refuse and emit an Error status.
+        // Exactly one service — D should refuse and emit an Error status.
         w.handle_input(key('d'));
         assert_eq!(w.services.len(), 1);
         assert!(matches!(w.status, Some(WizardStatus::Error(_))));

@@ -48,6 +48,9 @@ enum UiUpdate {
     // Sent by the checker task at the start of each poll cycle so the TUI
     // can render a countdown to the next probe.
     NextPoll { at: std::time::Instant },
+    // Sent when a delayed heal is scheduled for a DOWN service. Drives the
+    // per-service countdown in the LATENCY column.
+    HealScheduled { name: String, heal_at: std::time::Instant },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -400,6 +403,9 @@ async fn run_app(
                     Some(UiUpdate::NextPoll { at }) => {
                         app.set_next_poll(at);
                     }
+                    Some(UiUpdate::HealScheduled { name, heal_at }) => {
+                        app.set_heal_at(&name, heal_at);
+                    }
                     None => break,
                 }
                 terminal.draw(|f| tui::draw(f, &app))?;
@@ -507,13 +513,32 @@ async fn run_check(
                     Err(e) => error!(service = %svc.name, "Discord notify failed: {e:#}"),
                 }
             }
+
+            // Schedule the delayed heal and notify the TUI so it can show a countdown.
+            let recovery_delay = svc.recovery_delay;
+            let heal_at = std::time::Instant::now() + Duration::from_secs(recovery_delay);
+            let _ = tx.send(UiUpdate::HealScheduled { name: svc.name.clone(), heal_at }).await;
+
             if dry_run {
-                info!(service = %svc.name, cmd = %svc.restart_command, "[DRY-RUN] heal skipped");
-                let _ = tx.send(UiUpdate::Log(
-                    format!("[DRY-RUN] Would have executed: {}", svc.restart_command)
-                )).await;
+                let name = svc.name.clone();
+                let cmd  = svc.restart_command.clone();
+                let tx2  = tx.clone();
+                tokio::spawn(async move {
+                    tokio::time::sleep(Duration::from_secs(recovery_delay)).await;
+                    info!(service = %name, cmd = %cmd, "[DRY-RUN] heal skipped");
+                    let _ = tx2.send(UiUpdate::Log(
+                        format!("[DRY-RUN] Would have executed: {cmd}")
+                    )).await;
+                });
             } else {
-                healer::heal(&svc.name, &svc.restart_command).await?;
+                let name = svc.name.clone();
+                let cmd  = svc.restart_command.clone();
+                tokio::spawn(async move {
+                    tokio::time::sleep(Duration::from_secs(recovery_delay)).await;
+                    if let Err(e) = healer::heal(&name, &cmd).await {
+                        error!(service = %name, "Heal spawn error: {e:#}");
+                    }
+                });
             }
         }
 

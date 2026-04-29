@@ -8,7 +8,7 @@
 [![TUI: Ratatui](https://img.shields.io/badge/TUI-Ratatui-7B2CBF)](https://ratatui.rs/)
 [![Async: Tokio](https://img.shields.io/badge/Async-Tokio-1F6FEB)](https://tokio.rs/)
 [![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS-success)]()
-[![Status: v2.0](https://img.shields.io/badge/version-v2.0-brightgreen)]()
+[![Status: v3.0](https://img.shields.io/badge/version-v3.0-brightgreen)]()
 
 *"ผู้เฝ้าประตู" สำหรับ Infrastructure ของคุณ — ตรวจจับ, แจ้งเตือน, และซ่อมแซมอัตโนมัติ*
 
@@ -31,6 +31,17 @@ Gatekeeper-RS รวมทุกอย่างไว้ในไบนารี
 
 ---
 
+## ✨ What's New in v3.0
+
+> v3.0 เพิ่ม per-service recovery control และ refactor wizard ให้ปลอดภัยขึ้น
+
+| Feature | Description |
+|---|---|
+| ⏱️ **Per-Service Recovery Delay** | แต่ละ service ตั้ง `recovery_delay` (วินาที) ได้อิสระ — หลัง detect DOWN ระบบรอตาม delay ที่กำหนดก่อนสั่ง restart command อัตโนมัติ (default: 30 วินาที) |
+| 📟 **Heal Countdown in TUI** | คอลัมน์ LATENCY สำหรับ DOWN service แสดง `heal Xs` นับถอยหลังแบบ real-time ตาม `recovery_delay` ของแต่ละ service — ไม่ใช่ global poll timer อีกต่อไป |
+| 🔍 **Scan-First "Add Service"** | เมนู "Add Service" เปิด Service Scanner ทันที — ไม่มีฟอร์มกรอกเอง ลดข้อผิดพลาดและป้องกัน service ที่ชื่อผิดหลุดเข้า config |
+| 🚫 **No More Blank Service Forms** | Wizard เริ่มต้นด้วย services list ว่างเปล่า — ทุก service ต้องมาจาก Scanner เท่านั้น ไม่มีการกรอก Name จากศูนย์ |
+
 ## ✨ What's New in v2.0
 
 > v2.0 เปลี่ยนจาก "monitor ตัวเล็กๆ" เป็น **SRE automation suite** เต็มตัว
@@ -38,7 +49,7 @@ Gatekeeper-RS รวมทุกอย่างไว้ในไบนารี
 | Feature | Description |
 |---|---|
 | 🎛️ **Menu-Driven Setup Wizard** | TUI Wizard แบบหลายหน้าจอ (Main Menu → Global Settings / Service List / Service Edit) ใช้งานง่าย ใส่ข้อมูลครบทุกฟิลด์โดยไม่ต้องเขียน TOML เอง |
-| 🔍 **Local Service Discovery** | กด `S` ใน Wizard → รัน `systemctl list-units` แล้วเลือก service จริงในเครื่อง — auto-fill `Name` + `restart_command` |
+| 🔍 **Local Service Discovery** | รัน `systemctl list-units` แล้วเลือก service จริงในเครื่อง — auto-fill `Name` + `restart_command` |
 | 🔧 **Maintenance Mode** | กด `M` ใน Dashboard → หยุด heal + alert ชั่วคราวขณะทำ patching/deployment โดยที่ monitoring ยังทำงานต่อ |
 | 🧪 **Dry-Run Mode** | `--dry-run` flag → ทดสอบ detection + alert จริง แต่ไม่สั่ง restart จริง — เหมาะกับการ verify config ก่อน deploy |
 | 🔄 **Hot-Reload Config** | กด `R` ใน Dashboard → reload `config.toml` แบบ runtime ไม่ต้องรีสตาร์ตโปรแกรม |
@@ -65,17 +76,19 @@ Gatekeeper-RS รวมทุกอย่างไว้ในไบนารี
    │           │                                                  │
    │           ▼                                                  │
    │   ┌────────────────┐    ┌──────────────────┐                 │
-   │   │ healer (exec)  │    │ notifier (HTTP)  │                 │
-   │   └────────────────┘    └──────────────────┘                 │
-   │           │                       │                          │
-   └───────────┼───────────────────────┼──────────────────────────┘
-               ▼                       ▼
-       systemctl restart …      Discord webhook
+   │   │ delayed healer │    │ notifier (HTTP)  │                 │
+   │   │ (sleep N secs) │    └──────────────────┘                 │
+   │   └────────────────┘              │                          │
+   │           │                       ▼                          │
+   └───────────┼──────────────── Discord webhook ─────────────────┘
+               ▼
+       systemctl restart …
 ```
 
 **Design highlights:**
 - **Concurrent checks** ผ่าน `tokio::spawn` — service จำนวนมากตรวจขนานกันโดยไม่ block
 - **State-transition–based heal** — ยิง `restart_command` เฉพาะตอน UP→DOWN เท่านั้น ไม่ยิงทุก poll
+- **Per-service recovery delay** — spawned task นอนรอ `recovery_delay` วินาทีก่อน exec ไม่ block checker loop
 - **Lock-free maintenance flag** ผ่าน `Arc<AtomicBool>` — toggle ได้รวดเร็วโดยไม่ต้องรอ task อื่น
 - **Hot-reloadable config** ผ่าน `Arc<RwLock<Config>>` — checker task อ่านค่าใหม่ทุก tick
 
@@ -140,14 +153,26 @@ Wizard มี 4 หน้าจอหลัก:
 │      MAIN MENU         │
 │  > Edit Global Settings │  ──▶  กรอก Discord Webhook + Polling Interval
 │    Manage Services     │  ──▶  ดู / แก้ / ลบ service ที่มีอยู่
-│    Add New Service     │  ──▶  เพิ่ม service ใหม่
+│    Add Service         │  ──▶  เปิด Scanner เลือก service จากระบบ
 │    Save & Exit         │  ──▶  เขียนลง config.toml
 └────────────────────────┘
 ```
 
-#### ✨ Service Discovery (กด `S`)
+#### Service Edit Fields
 
-ในหน้า **Manage Services** หรือ **Main Menu** กด `S` → ระบบจะรัน:
+เมื่อเลือก service จาก Scanner หรือแก้ไขจาก Manage Services จะมีฟิลด์ให้กรอก:
+
+| Field | Description | Default |
+|---|---|---|
+| **Name** | ชื่อ service (auto-fill จาก Scanner) | — |
+| **URL / Address** | HTTP: `http://host:port/path` \| TCP: `host:port` | — |
+| **Method** | `HTTP` หรือ `TCP` (Toggle ด้วย `←/→`) | `HTTP` |
+| **Restart Command** | คำสั่ง restart (auto-fill จาก Scanner) | — |
+| **Recovery Delay (seconds)** | วินาทีที่รอก่อนสั่ง restart หลัง detect DOWN | `30` |
+
+#### ✨ Service Discovery ("Add Service")
+
+เลือก **Add Service** ใน Main Menu หรือกด `S` ใน Manage Services → ระบบจะรัน:
 
 ```bash
 systemctl list-units --type=service --state=running --no-pager --plain
@@ -157,7 +182,7 @@ systemctl list-units --type=service --state=running --no-pager --plain
 - **Name:** ชื่อ unit (ตัด `.service` ออก)
 - **Restart Command:** `sudo systemctl restart <unit>.service`
 
-เหลือแค่กรอก **URL/Address** ของ service เอง
+จากนั้น Wizard จะพาไปยัง Service Edit ให้กรอก **URL/Address**, **Method**, และ **Recovery Delay** ก่อน save
 
 > **หมายเหตุ:** ฟีเจอร์นี้ใช้ได้เฉพาะ Linux ที่มี systemd บน macOS/Windows จะแสดง `Scanner only available on Linux/Systemd.`
 
@@ -174,13 +199,29 @@ name = "nginx"
 url = "http://localhost:80/health"
 method = "HTTP"
 restart_command = "sudo systemctl restart nginx.service"
+recovery_delay = 30
 
 [[services]]
 name = "redis"
 url = "127.0.0.1:6379"
 method = "TCP"
 restart_command = "sudo systemctl restart redis.service"
+recovery_delay = 60
 ```
+
+#### Config Fields
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `interval_secs` | `u64` | — | ความถี่ในการ poll (วินาที) |
+| `discord_webhook_url` | `String` | *(optional)* | URL สำหรับส่ง alert |
+| `services[].name` | `String` | — | ชื่อ service |
+| `services[].url` | `String` | — | HTTP URL หรือ `host:port` |
+| `services[].method` | `"HTTP"\|"TCP"` | — | วิธีตรวจสอบ |
+| `services[].restart_command` | `String` | — | คำสั่ง restart |
+| `services[].recovery_delay` | `u64` | `30` | วินาทีรอก่อน restart หลัง DOWN |
+
+> **Tip:** `recovery_delay` เป็น optional field — config เก่าที่ไม่มีฟิลด์นี้จะใช้ค่า default `30` โดยอัตโนมัติ ไม่ต้องแก้ไขไฟล์
 
 ### Test-Mode Override
 
@@ -224,6 +265,28 @@ restart_command = "sudo systemctl restart redis.service"
 | 🟡 CPU/RAM gauge | เริ่มสูง |
 | 🔴 CPU/RAM gauge | critical |
 
+**LATENCY column — DOWN services:**
+
+| ข้อความ | ความหมาย |
+|---|---|
+| `heal 28s` | Heal command จะยิงใน 28 วินาที (นับถอยหลังตาม `recovery_delay`) |
+| `next 12s` | Heal ยิงแล้ว — รอ poll รอบหน้าเพื่อยืนยันว่า service กลับมาหรือไม่ |
+| `checking` | Poll cycle กำลังรันอยู่ |
+
+### ⏱️ Recovery Delay
+
+เมื่อตรวจพบ DOWN:
+
+```
+t=0s   ── detect DOWN ── HealScheduled ──▶ TUI แสดง "heal 30s"
+t=30s  ── spawn task ตื่น ── exec restart_command
+t=60s  ── poll cycle ถัดไป ── ตรวจสอบว่ากลับมาแล้วหรือยัง
+```
+
+- แต่ละ service มี `recovery_delay` เป็นของตัวเอง ปรับได้ตาม SLA
+- Heal task ทำงาน **แยกจาก checker loop** (tokio::spawn) — ไม่ block การตรวจ service อื่น
+- ถ้า service กลับมาก่อน delay หมด (เช่น restart เอง) — poll รอบหน้าจะ detect RECOVERED และ cancel countdown ใน TUI อัตโนมัติ
+
 ### 🔧 Maintenance Mode (กด `M`)
 
 ใช้เมื่อต้องการทำงาน maintenance เอง ไม่ให้ Gatekeeper เข้าไปแทรก
@@ -231,7 +294,7 @@ restart_command = "sudo systemctl restart redis.service"
 | พฤติกรรม | ปกติ | Maintenance ON |
 |---|---|---|
 | Polling | ✅ | ✅ |
-| สั่ง `restart_command` | ✅ | ❌ ระงับ |
+| รอ recovery_delay + สั่ง restart | ✅ | ❌ ระงับ |
 | ส่ง Discord alert | ✅ | ❌ ระงับ |
 | บันทึก log | ✅ | ✅ (มี tag `[MAINT]`) |
 
@@ -275,7 +338,7 @@ restart_command = "sudo systemctl restart redis.service"
 | `Enter` | เปิดเมนู / ยืนยัน / ไปฟิลด์ถัดไป |
 | `Tab` / `Shift+Tab` | สลับ focus ระหว่างฟิลด์ |
 | `Esc` / `q` | กลับเมนูก่อนหน้า |
-| `S` | สแกน Service ในเครื่อง (Local Discovery) |
+| `S` | สแกน Service ในเครื่อง (ใช้ได้จากหน้า Manage Services) |
 | `D` | ลบ service ที่เลือก (ในหน้า Manage Services) |
 | `← / → / Space` | สลับ Method ระหว่าง HTTP ↔ TCP |
 
@@ -312,8 +375,8 @@ restart_command = "sudo systemctl restart redis.service"
 
 | Event | Meaning |
 |---|---|
-| `Service DOWN — triggering auto-heal service=X cmd=...` | ตรวจพบ X ล่ม กำลังจะ restart |
-| `Service RECOVERED service=X` | service กลับมา UP |
+| `Service DOWN — triggering auto-heal service=X cmd=...` | ตรวจพบ X ล่ม — กำลังตั้ง heal timer |
+| `Service RECOVERED service=X` | service กลับมา UP หลัง heal |
 | `Discord DOWN alert sent service=X` | Discord ส่งสำเร็จ |
 | `[DRY-RUN] heal skipped service=X` | อยู่ใน dry-run — ไม่ได้ restart จริง |
 | `[MAINT] DOWN observed — alert + heal suppressed` | อยู่ใน maintenance mode |
@@ -378,23 +441,35 @@ WantedBy=multi-user.target
 
 > เมื่อรันเป็น systemd จะไม่มี TUI ให้ดู — ใช้ `journalctl -fu gatekeeper` หรือ `tail -f logs/gatekeeper.*.log` แทน
 
-### 3. กัน Restart Loop / Flapping
+### 3. ปรับ Recovery Delay ให้เหมาะกับแต่ละ Service
 
-**ปัจจุบัน Gatekeeper-RS ยังไม่มี cooldown timer ในตัว** — แต่มี safeguard ระดับ state machine:
+`recovery_delay` ไม่ใช่แค่ cooldown — มันคือ "เวลาที่ให้ service ฟื้นตัวเอง" ก่อนที่ Gatekeeper จะเข้าแทรกแซง
 
-> heal command ยิงเฉพาะตอนที่ **transition UP→DOWN** เท่านั้น
-> ไม่ใช่ทุก poll cycle ที่เห็น DOWN
+**แนวทาง:**
 
-**คำแนะนำ:**
-- ตั้ง `interval_secs ≥ 30` สำหรับ production
-- ใช้ HTTP healthcheck endpoint ที่ stable (เช่น `/healthz`) — ไม่ใช่หน้าแรกที่ load หนัก
-- Monitor log ถ้าเห็น `DOWN`/`RECOVERED` สลับกันถี่ๆ → ปัญหาที่ตัว service เอง ไม่ใช่ heal มากขึ้นจะช่วย
-- ใช้ Maintenance Mode ระหว่าง deployment
+| ประเภท Service | recovery_delay แนะนำ | เหตุผล |
+|---|---|---|
+| Web server (nginx, caddy) | `15–30s` | restart เร็ว ผล impact ทันที |
+| Database (postgres, mysql) | `60–120s` | ต้องการเวลา recovery + crash-safe shutdown |
+| Message broker (redis, rabbitmq) | `30–60s` | มี in-memory state ที่ต้องระวัง |
+| Background worker / cron | `60s+` | อาจกำลัง graceful shutdown อยู่ |
+
+```toml
+# ตัวอย่าง: ให้ database เวลา 2 นาทีก่อน restart
+[[services]]
+name = "postgres"
+url = "127.0.0.1:5432"
+method = "TCP"
+restart_command = "sudo systemctl restart postgresql"
+recovery_delay = 120
+```
+
+> **Safeguard ที่ยังมีอยู่:** heal command ยิงเฉพาะตอน **transition UP→DOWN** เท่านั้น — ถ้า service ยัง DOWN ในรอบถัดไปโดยไม่มี UP คั่น จะไม่ยิงซ้ำ ป้องกัน restart loop
 
 ### 4. Security
 
 - `discord_webhook_url` ถือเป็น **secret** → `chmod 600 config.toml`
-- `restart_command` execute ตามที่เขียน — ไม่มี sandbox → ระวัง shell injection patterns
+- `restart_command` execute ตามที่เขียน — ไม่มี shell (split on whitespace เท่านั้น) → ไม่มี command injection แต่ต้องดูแลว่าคำสั่งถูกต้อง
 - `logs/` อาจมี URL internal service → จำกัดสิทธิ์อ่าน
 
 ---
@@ -404,13 +479,13 @@ WantedBy=multi-user.target
 ```
 gatekeeper-rs/
 ├── src/
-│   ├── main.rs              # Entry point + run_app event loop
+│   ├── main.rs              # Entry point + run_app event loop + UiUpdate channel
 │   ├── config.rs            # TOML config loading + testconfig overlay
 │   ├── checker.rs           # HTTP / TCP probe logic
 │   ├── healer.rs            # Restart command executor (no shell injection)
 │   ├── notifier.rs          # Discord webhook sender
-│   ├── tui.rs               # Monitor Mode dashboard rendering
-│   ├── config_wizard.rs     # Setup Wizard state machine
+│   ├── tui.rs               # Monitor Mode dashboard rendering + heal countdown
+│   ├── config_wizard.rs     # Setup Wizard state machine (scan-first add flow)
 │   ├── config_wizard_ui.rs  # Setup Wizard rendering
 │   └── log_appender.rs      # Local-time daily log rotator
 ├── config.toml              # Production config (managed by Wizard)
@@ -421,4 +496,4 @@ gatekeeper-rs/
 
 ---
 
-- เขียนด้วย: [Rust](https://www.rust-lang.org/) + [Tokio](https://tokio.rs/) + [Ratatui]
+- เขียนด้วย: [Rust](https://www.rust-lang.org/) + [Tokio](https://tokio.rs/) + [Ratatui](https://ratatui.rs/)
