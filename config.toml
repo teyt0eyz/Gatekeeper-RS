@@ -1,5 +1,5 @@
 interval_secs = 30
-discord_webhook_url = "https://discord.com/api/webhooks/1498514698411311106/JJr7FNMcxaG0KfDAoEW3Inew2RIUcd9e5E6cAo3nblD09ckg0WQM6snN9MZRlspA4NTU"
+discord_webhook_url = "https://this-is-not-work"
 
 [[services]]
 name = "Auth Service"
@@ -9,7 +9,7 @@ restart_command = "systemctl restart auth-service"
 
 [[services]]
 name = "VPN Gateway"
-url = "192.168.1.1:1194"
+url = "127.0.0.1:65432"
 method = "TCP"
 restart_command = "systemctl restart openvpn@server"
 

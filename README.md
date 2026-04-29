@@ -434,19 +434,4 @@ gatekeeper-rs/
 
 ---
 
-## 📄 License & Credits
-
-- พัฒนาโดย: ทีม DevOps / Infrastructure
-- เขียนด้วย: [Rust](https://www.rust-lang.org/) + [Tokio](https://tokio.rs/) + [Ratatui](https://ratatui.rs/) + [Crossterm](https://github.com/crossterm-rs/crossterm)
-- Inspiration: Prometheus + Alertmanager + supervisord — แต่บีบเป็นไบนารีเดียว
-
----
-
-<div align="center">
-
-**คำถาม / รายงานบั๊ก** → ติดต่อทีมผู้ดูแลโปรเจกต์
-**เวอร์ชันคู่มือ:** v2.0 *(เมษายน 2026)*
-
-*Stay green. Stay healed. 🛡️*
-
-</div>
+- เขียนด้วย: [Rust](https://www.rust-lang.org/) + [Tokio](https://tokio.rs/) + [Ratatui]
