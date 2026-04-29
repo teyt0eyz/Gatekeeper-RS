@@ -85,7 +85,7 @@ Gatekeeper-RS รวมทุกอย่างไว้ในไบนารี
 
 ```bash
 # 1. Build
-git clone <repo-url> gatekeeper-rs && cd gatekeeper-rs
+git clone https://github.com/teyt0eyz/Gatekeeper-RS.git gatekeeper-rs && cd gatekeeper-rs
 cargo build --release
 
 # 2. ตั้งค่าครั้งแรก (Wizard)
