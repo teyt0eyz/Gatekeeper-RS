@@ -119,10 +119,13 @@ async fn main() -> Result<()> {
     }
 
     // ── Config-wizard mode ────────────────────────────────────────────────────
+    // Wizard is interactive UI, not a monitoring event — its open/close is
+    // visible to the user already and adds nothing to the daily log. Demoted
+    // to debug so it only shows when explicitly requested.
     if want_wizard {
-        info!("Entering config-wizard mode");
+        debug!("Entering config-wizard mode");
         let result = run_config_wizard(&config_path);
-        info!("Config-wizard exited");
+        debug!("Config-wizard exited");
         drop(_guard);
         return result;
     }
@@ -407,7 +410,9 @@ async fn run_app(
     // Send a final Discord alert so the ops team knows monitoring has stopped.
     let discord_url = shared_cfg.read().await.discord_webhook_url.clone();
     if let Some(ref url) = discord_url {
-        info!("Sending offline notification to Discord");
+        // No "Sending offline notification" log line — the only outcomes worth
+        // recording are the failure case (logged below) and the final
+        // "shutdown complete" line that always follows.
         let msg = ":skull: **Gatekeeper-RS** is going **OFFLINE**. Services are no longer monitored.";
         if let Err(e) = notifier::send_discord(url, msg).await {
             error!("Offline Discord notification failed: {e:#}");

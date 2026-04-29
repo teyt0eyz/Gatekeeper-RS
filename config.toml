@@ -1,9 +1,9 @@
 interval_secs = 30
-discord_webhook_url = "https://this-is-not-work"
+discord_webhook_url = "https://discord.com/api/webhooks/1498514698411311106/JJr7FNMcxaG0KfDAoEW3Inew2RIUcd9e5E6cAo3nblD09ckg0WQM6snN9MZRlspA4NTU"
 
 [[services]]
 name = "Auth Service"
-url = "http://192.168.1.10:8080/health"
+url = "http://thisis-fake-url.co.th"
 method = "HTTP"
 restart_command = "systemctl restart auth-service"
 

@@ -615,3 +615,151 @@ fn parse_systemctl_output(stdout: &str) -> Vec<ScanResult> {
         })
         .collect()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn key(c: char) -> KeyEvent {
+        KeyEvent::new(KeyCode::Char(c), KeyModifiers::empty())
+    }
+    fn enter() -> KeyEvent { KeyEvent::new(KeyCode::Enter,  KeyModifiers::empty()) }
+
+    // ── 1.1 Wizard input validation ─────────────────────────────────────────
+
+    #[test]
+    fn interval_rejects_zero() {
+        let mut w = ConfigWizard::new();
+        w.interval = "0".into();
+        w.validate_interval();
+        assert!(w.errors.contains_key("interval"));
+    }
+
+    #[test]
+    fn interval_rejects_non_numeric() {
+        let mut w = ConfigWizard::new();
+        w.interval = "abc".into();
+        w.validate_interval();
+        assert!(w.errors.contains_key("interval"));
+    }
+
+    #[test]
+    fn interval_rejects_empty() {
+        let mut w = ConfigWizard::new();
+        w.interval.clear();
+        w.validate_interval();
+        assert!(w.errors.contains_key("interval"));
+    }
+
+    #[test]
+    fn interval_accepts_positive() {
+        let mut w = ConfigWizard::new();
+        w.interval = "30".into();
+        w.validate_interval();
+        assert!(!w.errors.contains_key("interval"));
+    }
+
+    #[test]
+    fn interval_keystroke_filters_letters() {
+        // In GlobalSettings/Interval, only digits should append to the buffer.
+        let mut w = ConfigWizard::new();
+        w.screen        = Screen::GlobalSettings;
+        w.global_focus  = GlobalField::Interval;
+        w.interval.clear();
+        w.handle_input(key('a'));
+        assert_eq!(w.interval, "");
+        w.handle_input(key('5'));
+        assert_eq!(w.interval, "5");
+        w.handle_input(key('q'));
+        assert_eq!(w.interval, "5");
+    }
+
+    #[test]
+    fn empty_service_fields_flagged() {
+        let mut w = ConfigWizard::new();
+        // default ServiceForm has all empty strings
+        w.validate_service(0);
+        assert!(w.errors.contains_key("svc_0_name"));
+        assert!(w.errors.contains_key("svc_0_url"));
+        assert!(w.errors.contains_key("svc_0_cmd"));
+    }
+
+    #[test]
+    fn filled_service_passes_validation() {
+        let mut w = ConfigWizard::new();
+        w.services[0].name            = "nginx".into();
+        w.services[0].url             = "http://localhost".into();
+        w.services[0].restart_command = "echo ok".into();
+        w.validate_service(0);
+        assert!(!w.errors.contains_key("svc_0_name"));
+        assert!(!w.errors.contains_key("svc_0_url"));
+        assert!(!w.errors.contains_key("svc_0_cmd"));
+    }
+
+    // ── Menu navigation ──────────────────────────────────────────────────────
+
+    #[test]
+    fn add_service_menu_creates_new_form() {
+        let mut w = ConfigWizard::new();
+        let before = w.services.len();
+        w.menu_index = 2; // "Add New Service"
+        w.handle_input(enter());
+        assert_eq!(w.services.len(), before + 1);
+        assert!(matches!(w.screen, Screen::ServiceEdit(_)));
+    }
+
+    #[test]
+    fn delete_keeps_at_least_one_service() {
+        let mut w = ConfigWizard::new();
+        w.screen = Screen::ServiceList;
+        // Default has 1 service. D should refuse and emit an Error status.
+        w.handle_input(key('d'));
+        assert_eq!(w.services.len(), 1);
+        assert!(matches!(w.status, Some(WizardStatus::Error(_))));
+    }
+
+    // ── 2.3 / 4.x Scanner ────────────────────────────────────────────────────
+
+    #[test]
+    fn parse_systemctl_extracts_name_and_description() {
+        let stdout = "\
+UNIT                    LOAD   ACTIVE SUB     DESCRIPTION
+nginx.service           loaded active running A high performance web server
+redis.service           loaded active running Advanced key-value store
+3 loaded units listed.";
+        let out = parse_systemctl_output(stdout);
+        assert_eq!(out.len(), 2);
+        assert_eq!(out[0].name, "nginx.service");
+        assert!(out[0].description.contains("high performance"));
+        assert_eq!(out[1].name, "redis.service");
+    }
+
+    #[test]
+    fn parse_systemctl_skips_header_and_footer() {
+        // Header rows lack ".service" + "loaded" → should be filtered.
+        let stdout = "\
+UNIT  LOAD  ACTIVE  SUB  DESCRIPTION
+0 loaded units listed.";
+        assert_eq!(parse_systemctl_output(stdout).len(), 0);
+    }
+
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn scanner_shows_friendly_error_when_systemctl_missing() {
+        // On macOS Command::new("systemctl") fails to spawn, which must
+        // surface as a friendly status, NOT a panic / crash.
+        let mut w = ConfigWizard::new();
+        w.start_scan();
+        match &w.status {
+            Some(WizardStatus::Error(msg)) => {
+                assert!(
+                    msg.contains("Linux") || msg.contains("Systemd"),
+                    "unexpected error: {msg}"
+                );
+            }
+            other => panic!("expected Error status, got {other:?}"),
+        }
+        // Must also NOT switch into the Scanner screen
+        assert!(!matches!(w.screen, Screen::Scanner));
+    }
+}

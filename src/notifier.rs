@@ -4,7 +4,7 @@
 
 use anyhow::{Context, Result};
 use serde_json::json;
-use tracing::{info, warn};
+use tracing::warn;
 
 pub async fn send_discord(webhook_url: &str, message: &str) -> Result<()> {
     let client = reqwest::Client::new();
@@ -19,9 +19,10 @@ pub async fn send_discord(webhook_url: &str, message: &str) -> Result<()> {
         .await
         .context("HTTP request to Discord webhook failed")?;
 
-    if resp.status().is_success() {
-        info!("Discord notification delivered");
-    } else {
+    // Successful delivery is silent here — main.rs logs the meaningful
+    // version ("Discord DOWN alert sent service=X") which actually identifies
+    // *which* service the notification was about.
+    if !resp.status().is_success() {
         // Non-fatal: a missed notification should not crash monitoring
         warn!(status = %resp.status(), "Discord webhook returned non-2xx");
     }

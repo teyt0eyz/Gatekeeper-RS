@@ -31,3 +31,45 @@ tracing-appender = "0.2"
 
 # Host CPU / RAM monitoring
 sysinfo = "0.30"
+
+[dev-dependencies]
+tempfile = "3"
+
+# ── Release profile: optimised for minimum binary size ────────────────────────
+# Typical impact on this codebase:
+#   default release   ≈ 25–30 MB
+#   with these flags  ≈   5–8 MB  (≈ 70–80 % smaller, single-file deliverable)
+#
+# Trade-offs (all acceptable for a long-running monitoring daemon):
+#   - opt-level = "z"     : prefers size over a few % runtime — TUI redraw and
+#                           HTTP polling stay well under their budgets at this
+#                           level (poll cycles run every interval_secs anyway).
+#   - lto = true          : cross-crate inlining + dead-code elimination — adds
+#                           ~30–60 s to release compile time, removes a lot of
+#                           unused tokio / reqwest / ratatui code paths.
+#   - codegen-units = 1   : single compilation unit, lets LTO see everything;
+#                           slower to compile, smaller and slightly faster output.
+#   - strip = true        : strips debug symbols + unneeded ELF/Mach-O sections
+#                           after link — equivalent to `strip --strip-all`.
+#   - panic = "abort"     : drops the whole unwinding machinery from the binary
+#                           (saves ~5–10 %). Implications:
+#                             * a panic anywhere → process aborts instead of
+#                               unwinding stacks. For a monitor this is FINE —
+#                               we'd rather crash loudly than corrupt state.
+#                             * Drop impls don't run on panic exit. The only
+#                               Drop we rely on (tracing-appender's WorkerGuard
+#                               flushing the log buffer) loses at most the last
+#                               ~1–2 buffered lines on panic, never on normal
+#                               exit (we drop(_guard) explicitly in main).
+#                             * The terminal-restoration panic hook in main.rs
+#                               still runs before abort — raw mode is undone,
+#                               cursor is restored, the user's shell is fine.
+#                             * Config Wizard / Discovery / Maintenance Mode
+#                               contain no `catch_unwind` so all features work
+#                               unchanged.
+[profile.release]
+opt-level     = "z"
+lto           = true
+codegen-units = 1
+strip         = true
+panic         = "abort"

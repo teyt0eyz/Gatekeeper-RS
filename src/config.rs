@@ -119,3 +119,87 @@ pub fn load(path: &str) -> Result<Config> {
     toml::from_str(&raw)
         .context("Failed to parse config — check syntax and required fields")
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn write(dir: &std::path::Path, name: &str, body: &str) -> String {
+        let p = dir.join(name);
+        std::fs::write(&p, body).unwrap();
+        p.to_string_lossy().into_owned()
+    }
+
+    const SAMPLE_CFG: &str = "\
+interval_secs = 30
+[[services]]
+name = \"a\"
+url = \"http://x\"
+method = \"HTTP\"
+restart_command = \"true\"
+";
+
+    #[test]
+    fn load_returns_error_when_file_missing() {
+        let result = load("/this/path/does/not/exist/cfg.toml");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn load_returns_error_for_broken_toml() {
+        let dir  = tempfile::tempdir().unwrap();
+        let path = write(dir.path(), "bad.toml", "this is not = valid toml [[[");
+        assert!(load(&path).is_err());
+    }
+
+    #[test]
+    fn no_testconfig_means_no_banner() {
+        let dir = tempfile::tempdir().unwrap();
+        let cfg = write(dir.path(), "cfg.toml", SAMPLE_CFG);
+        let _g  = ChangeDir::to(dir.path());
+        let r   = load_final(&cfg).unwrap();
+        assert!(r.banner.is_none());
+        assert_eq!(r.config.interval_secs, 30);
+    }
+
+    #[test]
+    fn testconfig_overlay_overrides_interval_and_emits_banner() {
+        let dir = tempfile::tempdir().unwrap();
+        let cfg = write(dir.path(), "cfg.toml", SAMPLE_CFG);
+        write(dir.path(), "testconfig.toml", "interval_secs = 5\n");
+        let _g  = ChangeDir::to(dir.path());
+        let r   = load_final(&cfg).unwrap();
+        assert_eq!(r.config.interval_secs, 5);
+        assert!(r.banner.as_deref().unwrap_or("").contains("TEST MODE"));
+    }
+
+    #[test]
+    fn broken_testconfig_falls_back_with_warning_banner() {
+        let dir = tempfile::tempdir().unwrap();
+        let cfg = write(dir.path(), "cfg.toml", SAMPLE_CFG);
+        write(dir.path(), "testconfig.toml", "this is = broken [[[");
+        let _g  = ChangeDir::to(dir.path());
+        let r   = load_final(&cfg).unwrap();
+        assert_eq!(r.config.interval_secs, 30, "base config must win when overlay broken");
+        let banner = r.banner.unwrap_or_default();
+        assert!(banner.contains("parse error") || banner.contains("⚠"),
+            "expected fallback banner, got: {banner:?}");
+    }
+
+    /// load_final() reads testconfig.toml from cwd, so overlay tests must cd
+    /// into the tempdir. cargo test runs threads in parallel by default, so we
+    /// serialise cwd changes through a global Mutex.
+    struct ChangeDir { orig: std::path::PathBuf, _lock: std::sync::MutexGuard<'static, ()> }
+    impl ChangeDir {
+        fn to(dir: &std::path::Path) -> Self {
+            static LOCK: std::sync::OnceLock<std::sync::Mutex<()>> = std::sync::OnceLock::new();
+            let lock = LOCK.get_or_init(|| std::sync::Mutex::new(())).lock().unwrap_or_else(|p| p.into_inner());
+            let orig = std::env::current_dir().unwrap();
+            std::env::set_current_dir(dir).unwrap();
+            Self { orig, _lock: lock }
+        }
+    }
+    impl Drop for ChangeDir {
+        fn drop(&mut self) { let _ = std::env::set_current_dir(&self.orig); }
+    }
+}

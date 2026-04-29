@@ -5,10 +5,13 @@
 
 use anyhow::{Context, Result};
 use tokio::process::Command;
-use tracing::{error, info};
+use tracing::{debug, error};
 
 pub async fn heal(service_name: &str, restart_command: &str) -> Result<()> {
-    info!(service = service_name, cmd = restart_command, "Executing heal command");
+    // Note: we do NOT log the start of execution at INFO — main.rs already
+    // emits a `WARN Service DOWN — triggering auto-heal` line with both the
+    // service name and the command, immediately before calling us. Logging
+    // the same fact here doubled every outage entry in gatekeeper.log.
 
     let mut parts = restart_command.split_whitespace();
     let program = parts
@@ -23,7 +26,10 @@ pub async fn heal(service_name: &str, restart_command: &str) -> Result<()> {
         .with_context(|| format!("Failed to spawn '{restart_command}'"))?;
 
     if output.status.success() {
-        info!(service = service_name, "Heal command exited successfully");
+        // Successful heal is silent at INFO — the matching `Service RECOVERED`
+        // line from the next poll cycle is the real signal that the heal worked.
+        // Available at RUST_LOG=gatekeeper_rs=debug if you need to verify.
+        debug!(service = service_name, "Heal command exited successfully");
     } else {
         let stderr = String::from_utf8_lossy(&output.stderr);
         // Log but don't propagate — a failed heal is recoverable; we'll retry
