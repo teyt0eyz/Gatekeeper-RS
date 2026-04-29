@@ -31,31 +31,20 @@ Gatekeeper-RS รวมทุกอย่างไว้ในไบนารี
 
 ---
 
-## ✨ What's New in v3.0
-
-> v3.0 เพิ่ม per-service recovery control และ refactor wizard ให้ปลอดภัยขึ้น
+## ✨ Features
 
 | Feature | Description |
 |---|---|
-| ⏱️ **Per-Service Recovery Delay** | แต่ละ service ตั้ง `recovery_delay` (วินาที) ได้อิสระ — หลัง detect DOWN ระบบรอตาม delay ที่กำหนดก่อนสั่ง restart command อัตโนมัติ (default: 30 วินาที) |
-| 📟 **Heal Countdown in TUI** | คอลัมน์ LATENCY สำหรับ DOWN service แสดง `heal Xs` นับถอยหลังแบบ real-time ตาม `recovery_delay` ของแต่ละ service — ไม่ใช่ global poll timer อีกต่อไป |
-| 🔍 **Scan-First "Add Service"** | เมนู "Add Service" เปิด Service Scanner ทันที — ไม่มีฟอร์มกรอกเอง ลดข้อผิดพลาดและป้องกัน service ที่ชื่อผิดหลุดเข้า config |
-| 🚫 **No More Blank Service Forms** | Wizard เริ่มต้นด้วย services list ว่างเปล่า — ทุก service ต้องมาจาก Scanner เท่านั้น ไม่มีการกรอก Name จากศูนย์ |
-
-## ✨ What's New in v2.0
-
-> v2.0 เปลี่ยนจาก "monitor ตัวเล็กๆ" เป็น **SRE automation suite** เต็มตัว
-
-| Feature | Description |
-|---|---|
-| 🎛️ **Menu-Driven Setup Wizard** | TUI Wizard แบบหลายหน้าจอ (Main Menu → Global Settings / Service List / Service Edit) ใช้งานง่าย ใส่ข้อมูลครบทุกฟิลด์โดยไม่ต้องเขียน TOML เอง |
-| 🔍 **Local Service Discovery** | รัน `systemctl list-units` แล้วเลือก service จริงในเครื่อง — auto-fill `Name` + `restart_command` |
-| 🔧 **Maintenance Mode** | กด `M` ใน Dashboard → หยุด heal + alert ชั่วคราวขณะทำ patching/deployment โดยที่ monitoring ยังทำงานต่อ |
-| 🧪 **Dry-Run Mode** | `--dry-run` flag → ทดสอบ detection + alert จริง แต่ไม่สั่ง restart จริง — เหมาะกับการ verify config ก่อน deploy |
-| 🔄 **Hot-Reload Config** | กด `R` ใน Dashboard → reload `config.toml` แบบ runtime ไม่ต้องรีสตาร์ตโปรแกรม |
-| 📅 **Local-Time Daily Logs** | log rotate ตาม **เวลา local ของเครื่อง** (ไม่ใช่ UTC) — ไฟล์ `gatekeeper.YYYY-MM-DD.log` ตรงกับวันที่จริงในประเทศไทย |
-| 📊 **Live Sparklines** | กราฟ rolling 20 จุดของ latency รายตัว service พร้อมสีตาม status |
-| 💻 **Host Health Sidebar** | gauge CPU + RAM แบบ real-time พร้อม threshold สี (เขียว/เหลือง/แดง) |
+| 🎛️ **Setup Wizard** | TUI Wizard แบบหลายหน้าจอ — ตั้งค่าครบโดยไม่ต้องเขียน TOML เอง |
+| 🔍 **Service Discovery** | เลือก "Add Service" → รัน `systemctl list-units` แล้วเลือก service จากรายการ — auto-fill ชื่อและ restart command |
+| ⏱️ **Per-Service Recovery Delay** | แต่ละ service ตั้ง `recovery_delay` (วินาที) ได้อิสระ — ระบบรอตาม delay ก่อนสั่ง restart หลัง detect DOWN (default: 30s) |
+| 📟 **Heal Countdown** | คอลัมน์ LATENCY แสดง `heal Xs` นับถอยหลัง real-time ตาม `recovery_delay` ของแต่ละ service |
+| 🔧 **Maintenance Mode** | กด `M` → หยุด heal + Discord alert ชั่วคราว โดยที่ monitoring ยังทำงานต่อ — เหมาะระหว่าง patching |
+| 🧪 **Dry-Run Mode** | `--dry-run` → ทดสอบ detection + alert จริง แต่ไม่สั่ง restart จริง |
+| 🔄 **Hot-Reload Config** | กด `R` → reload `config.toml` แบบ runtime ไม่ต้องรีสตาร์ตโปรแกรม |
+| 📊 **Live Sparklines** | กราฟ latency rolling 20 จุดรายตัว service พร้อมสีตาม status |
+| 💻 **Host Health Sidebar** | gauge CPU + RAM real-time พร้อม threshold สี (เขียว/เหลือง/แดง) |
+| 📅 **Local-Time Daily Logs** | log rotate ตามเวลา local ของเครื่อง — ไฟล์ `gatekeeper.YYYY-MM-DD.log` ตรงกับวันที่จริง |
 
 ---
 
@@ -97,18 +86,27 @@ Gatekeeper-RS รวมทุกอย่างไว้ในไบนารี
 ## 🚀 Quick Start
 
 ```bash
-# 1. Build
+# 1. Clone & Build
 git clone https://github.com/teyt0eyz/Gatekeeper-RS.git gatekeeper-rs && cd gatekeeper-rs
-cargo build --release
+make build
 
 # 2. ตั้งค่าครั้งแรก (Wizard)
-./target/release/gatekeeper-rs --config
+make config
 
 # 3. รัน Monitor
-./target/release/gatekeeper-rs
+make run
 ```
 
 แค่ 3 ขั้นตอน — Wizard จะถามคำถามทุกอย่างและสร้าง `config.toml` ให้
+
+| Command | Description |
+|---|---|
+| `make build` | Compile release binary |
+| `make run` | รัน Monitor |
+| `make config` | เปิด Setup Wizard |
+| `make dry` | รันแบบ Dry-Run |
+| `make test` | รัน unit tests |
+| `make install` | ติดตั้งลง `~/.cargo/bin` (พิมพ์ `gatekeeper-rs` ได้จากทุกที่) |
 
 ---
 
